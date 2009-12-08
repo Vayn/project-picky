@@ -26,7 +26,7 @@
 				<div class="content">
 				{% endif %}
 				{{ article.content}}
-				<div class="misc">{{ article.created|date:"r" }}&nbsp;<a href="/{{ article.title_url }}" class="dark">&nbsp;»&nbsp;</a></div>
+				<div class="misc">{{ article.created|date:"M-j G:i" }}&nbsp;<a href="/{{ article.title_url }}" class="img">&nbsp;<img src="/static/shared/link.png" border="0" align="absmiddle" />&nbsp;</a></div>
 				</div>
 				{% endfor %}
 				{% if page_archive %}

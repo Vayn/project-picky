@@ -48,20 +48,24 @@ class MainHandler(webapp.RequestHandler):
 
 class ArchiveHandler(webapp.RequestHandler):
   def get(self):
-    articles = memcache.get("archive")
-    if articles is None:
-      articles = db.GqlQuery("SELECT * FROM Article WHERE is_page = FALSE ORDER BY created DESC")
-      memcache.add("archive", articles, 3600)
-    pages = db.GqlQuery("SELECT * FROM Article WHERE is_page = TRUE AND is_for_sidebar = TRUE ORDER BY title ASC")
-    template_values['page_title'] = str(Datum.get('site_name')) + ' Archive'
-    template_values['articles'] = articles
-    template_values['articles_total'] = articles.count()
-    template_values['pages'] = pages
-    template_values['pages_total'] = pages.count()
-    template_values['page_archive'] = True
-    path = os.path.join(os.path.dirname(__file__), 'tpl', 'index.html')
-    self.response.out.write(template.render(path, template_values))
-
+    output = memcache.get('archive_output')
+    if output is None:  
+      articles = memcache.get('archive')
+      if articles is None:
+        articles = db.GqlQuery("SELECT * FROM Article WHERE is_page = FALSE ORDER BY created DESC")
+        memcache.add("archive", articles, 3600)
+      pages = db.GqlQuery("SELECT * FROM Article WHERE is_page = TRUE AND is_for_sidebar = TRUE ORDER BY title ASC")
+      template_values['page_title'] = str(Datum.get('site_name')) + ' Archive'
+      template_values['articles'] = articles
+      template_values['articles_total'] = articles.count()
+      template_values['pages'] = pages
+      template_values['pages_total'] = pages.count()
+      template_values['page_archive'] = True
+      path = os.path.join(os.path.dirname(__file__), 'tpl', 'index.html')
+      output = template.render(path, template_values)
+      memcache.add('archive_output', output, 1800)
+    self.response.out.write(output)
+  
 class ArticleHandler(webapp.RequestHandler):
   def get(self, url):
     pages = db.GqlQuery("SELECT * FROM Article WHERE is_page = TRUE AND is_for_sidebar = TRUE ORDER BY title ASC")
