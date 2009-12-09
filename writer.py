@@ -276,9 +276,9 @@ def main():
   ('/writer/new', WriterWriteHandler),
   ('/writer/save', WriterSynchronizeHandler),
   ('/writer/ping', WriterPingHandler),
-  ('/writer/update/([0-9a-zA-Z]+)', WriterSynchronizeHandler),
-  ('/writer/edit/([0-9a-zA-Z]+)', WriterWriteHandler),
-  ('/writer/remove/([0-9a-zA-Z]+)', WriterRemoveHandler)
+  ('/writer/update/([0-9a-zA-Z\-]+)', WriterSynchronizeHandler),
+  ('/writer/edit/([0-9a-zA-Z\-]+)', WriterWriteHandler),
+  ('/writer/remove/([0-9a-zA-Z\-]+)', WriterRemoveHandler)
   ],
                                        debug=True)
   wsgiref.handlers.CGIHandler().run(application)
