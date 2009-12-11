@@ -21,14 +21,15 @@ class Datum(db.Model):
   substance = db.TextProperty()
   
   def get(self, name):
-    value = memcache.get("datum_" + name)
+    value = memcache.get('datum_' + name)
     if value is not None:
       return value
     else:
       q = db.GqlQuery("SELECT * FROM Datum WHERE title = :1", name)
       if q.count() == 1:
         value = q[0].substance
-        memcache.set("datum_" + name, value, 86400)
+        memcache.delete('datum_' + name)
+        memcache.set('datum_' + name, value, 86400)
       return value
   get = classmethod(get)
     
@@ -41,5 +42,6 @@ class Datum(db.Model):
       d.title = name
     d.substance = value
     d.put()
-    memcache.set("datum_" + name, d.substance, 86400)
+    memcache.delete('datum_' + name)
+    memcache.set('datum_' + name, d.substance, 86400)
   set = classmethod(set)

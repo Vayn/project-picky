@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# coding=utf-8
 
 import os
 import time
@@ -55,7 +56,7 @@ class ArchiveHandler(webapp.RequestHandler):
         articles = db.GqlQuery("SELECT * FROM Article WHERE is_page = FALSE ORDER BY created DESC")
         memcache.add("archive", articles, 3600)
       pages = db.GqlQuery("SELECT * FROM Article WHERE is_page = TRUE AND is_for_sidebar = TRUE ORDER BY title ASC")
-      template_values['page_title'] = str(Datum.get('site_name')) + ' Archive'
+      template_values['page_title'] = site_name + ' Archive'
       template_values['articles'] = articles
       template_values['articles_total'] = articles.count()
       template_values['pages'] = pages
