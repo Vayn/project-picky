@@ -73,9 +73,12 @@ class ArticleHandler(webapp.RequestHandler):
     article = db.GqlQuery("SELECT * FROM Article WHERE title_url = :1 LIMIT 1", url)
     if (article.count() == 1):
       article_found = True
-      article = article[0];
-      article.hits = article.hits + 1;
-      article.put()
+      article = article[0]
+      article.hits = article.hits + 1
+      try:
+        article.put()
+      except:
+        article.hits = article.hits - 1
     else:
       article_found = False
     if (article_found):

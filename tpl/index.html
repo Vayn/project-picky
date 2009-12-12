@@ -26,7 +26,7 @@
 				<div class="content">
 				{% endif %}
 				{{ article.content}}
-				<div class="misc">{{ article.created|date:"M-j G:i" }}&nbsp;<a href="/{{ article.title_url }}" class="img">&nbsp;<img src="/static/shared/link.png" border="0" align="absmiddle" />&nbsp;</a></div>
+				<div class="misc">{{ article.created|date:"M-j G:i" }}&nbsp;<a href="/{{ article.title_url }}" class="img" title="Permalink to {{ article.title|escape }}">&nbsp;<img src="/static/shared/link.png" border="0" align="absmiddle" alt="Permalink to {{ article.title|escape }}" />&nbsp;</a></div>
 				</div>
 				{% endfor %}
 				{% if page_archive %}
@@ -35,7 +35,6 @@
 				<div class="footer"><a href="/archive">Previous Articles</a></div>
 				{% endif %}
 				{% endif %}
-				
 			</div>
 		</div>
 {% include 'footer.html' %}
