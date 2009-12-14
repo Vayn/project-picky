@@ -23,12 +23,19 @@ site_slogan = Datum.get('site_slogan')
 site_updated = Datum.get('site_updated')
 if site_updated is None:
   site_updated = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
+feed_url = Datum.get('feed_url')
+if feed_url is None:
+  feed_url = '/index.xml'
+else:
+  if len(feed_url) == 0:
+    feed_url = '/index.xml'
 
 template_values = {
   'site_domain' : site_domain,
   'site_name' : site_name,
   'site_author' : site_author,
-  'site_slogan' : site_slogan
+  'site_slogan' : site_slogan,
+  'feed_url' : feed_url
 }
 
 class MainHandler(webapp.RequestHandler):

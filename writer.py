@@ -108,6 +108,7 @@ class WriterSettingsHandler(webapp.RequestHandler):
       twitter_sync = True
     else:
       twitter_sync = False
+    feed_url = Datum.get('feed_url')
     template_values = {
       'site_domain' : site_domain,
       'site_name' : site_name,
@@ -115,7 +116,8 @@ class WriterSettingsHandler(webapp.RequestHandler):
       'site_slogan' : site_slogan,
       'twitter_account' : twitter_account,
       'twitter_password' : twitter_password,
-      'twitter_sync' : twitter_sync
+      'twitter_sync' : twitter_sync,
+      'feed_url' : feed_url
     }
     if user is not None:
       template_values['user_email'] = user.email()
@@ -142,6 +144,8 @@ class WriterSettingsHandler(webapp.RequestHandler):
     else:
       twitter_sync.substance = 'False'
     twitter_sync.put()
+    
+    Datum.set('feed_url', self.request.get('feed_url'))
     
     self.redirect('/writer/settings')
     

@@ -20,7 +20,7 @@
 	<input type="text" class="sls" name="site_author" value="{% if site_author %}{{ site_author|escape }}{% endif %}" />
 	<br /><br />
 	Slogan<br />
-	<input type="text" class="sls" name="site_slogan" value="{% if site_slogan %}{{ site_slogan|escape }}{% endif %}" />
+	<input type="text" class="sl" name="site_slogan" value="{% if site_slogan %}{{ site_slogan|escape }}{% endif %}" />
 	<div class="sep"></div>
 	<h1>Twitter</h1>
 	<div class="sep10"></div>
@@ -37,6 +37,13 @@
 	{% else %}
 	<select name="twitter_sync"><option value="True">On</option><option value="False" selected="selected">Off</option></select>
 	{% endif %}</small>
+	<div class="sep"></div>
+	<h1>Integration</h1>
+	<div class="sep10"></div>
+	<small class="fade">Integrate various 3rd-party services here.</small>
+	<div class="sep10"></div>
+	Alternative Feed<br />
+	<input type="text" class="sl" name="feed_url" value="{% if feed_url %}{{ feed_url|escape }}{% endif %}" />
 	<div class="sep"></div>
 	<input type="submit" class="btn" value="Save" />
 	</form>
