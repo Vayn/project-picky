@@ -13,6 +13,7 @@ from v2ex.picky.misc import reminder
 from v2ex.picky.misc import message
 from v2ex.picky.ext import feedparser
 from v2ex.picky.ext import twitter
+from v2ex.picky.ext.sessions import Session
 
 from google.appengine.api.labs import taskqueue
 from google.appengine.ext import webapp
@@ -52,6 +53,9 @@ class WriterOverviewHandler(webapp.RequestHandler):
       site_configured = False
     else:
       site_configured = True
+    self.session = Session()
+    if is_paginated:
+      self.session['page'] = page
     template_values = {
       'site_configured' : site_configured,
       'is_paginated' : is_paginated,
@@ -235,7 +239,11 @@ class WriterSynchronizeHandler(webapp.RequestHandler):
         result = urlfetch.fetch(google_ping)
       except:
         taskqueue.add(url='/writer/ping')
-      self.redirect('/writer/overview')
+      self.session = Session()
+      if 'page' in self.session:
+        self.redirect('/writer/overview?page=' + str(self.session['page']))
+      else:
+        self.redirect('/writer/overview')
     else:
       article = Article()
       article.title = self.request.get('title')
