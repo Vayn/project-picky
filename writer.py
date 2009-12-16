@@ -29,6 +29,7 @@ site_domain = Datum.get('site_domain')
 site_name = Datum.get('site_name')
 site_author = Datum.get('site_author')
 site_slogan = Datum.get('site_slogan')
+site_analytics = Datum.get('site_analytics')
 
 user = users.get_current_user()
 
@@ -69,9 +70,10 @@ class WriterOverviewHandler(webapp.RequestHandler):
       'articles' : articles,
       'articles_total' : len(articles)
     }
+    if site_analytics is not None:
+      template_values['site_analytics'] = site_analytics
     if user is not None:
       template_values['user_email'] = user.email()
-
     mentions_web = memcache.get('mentions_web')
     if mentions_web is None:
       try:
@@ -80,9 +82,7 @@ class WriterOverviewHandler(webapp.RequestHandler):
       except:
         mentions_web = None
     if mentions_web is not None:
-      if len(mentions_web.entries) > 0:
-        template_values['mentions_web'] = mentions_web.entries
-    
+      template_values['mentions_web'] = mentions_web.entries
     mentions_twitter = memcache.get('mentions_twitter')
     if mentions_twitter is None:
       try:
@@ -102,6 +102,7 @@ class WriterSettingsHandler(webapp.RequestHandler):
     site_name = Datum.get('site_name')
     site_author = Datum.get('site_author')
     site_slogan = Datum.get('site_slogan')
+    site_analytics = Datum.get('site_analytics')
     twitter_account = Datum.get('twitter_account')
     twitter_password = Datum.get('twitter_password')
     twitter_sync = None
@@ -118,11 +119,14 @@ class WriterSettingsHandler(webapp.RequestHandler):
       'site_name' : site_name,
       'site_author' : site_author,
       'site_slogan' : site_slogan,
+      'site_analytics' : site_analytics,
       'twitter_account' : twitter_account,
       'twitter_password' : twitter_password,
       'twitter_sync' : twitter_sync,
       'feed_url' : feed_url
     }
+    if site_analytics is not None:
+      template_values['site_analytics'] = site_analytics
     if user is not None:
       template_values['user_email'] = user.email()
     path = os.path.join(os.path.dirname(__file__), 'tpl', 'writer', 'settings.html')
@@ -133,6 +137,7 @@ class WriterSettingsHandler(webapp.RequestHandler):
     Datum.set('site_name', self.request.get('site_name'))
     Datum.set('site_author', self.request.get('site_author'))
     Datum.set('site_slogan', self.request.get('site_slogan'))
+    Datum.set('site_analytics', self.request.get('site_analytics'))
     Datum.set('twitter_account', self.request.get('twitter_account'))
     Datum.set('twitter_password', self.request.get('twitter_password'))
     
@@ -169,6 +174,8 @@ class WriterWriteHandler(webapp.RequestHandler):
         'page_title' : 'New Article',
         'page_reminder': reminder.writer_write
       }
+    if site_analytics is not None:
+      template_values['site_analytics'] = site_analytics
     if user is not None:
       template_values['user_email'] = user.email()
     path = os.path.join(os.path.dirname(__file__), 'tpl', 'writer', 'write.html')
@@ -266,6 +273,8 @@ class WriterSynchronizeHandler(webapp.RequestHandler):
         'message' : message.content_empty,
         'user_email' : user.email()
       }
+      if site_analytics is not None:
+        template_values['site_analytics'] = site_analytics
       path = os.path.join(os.path.dirname(__file__), 'tpl', 'writer', 'write.html')
       self.response.out.write(template.render(path, template_values))
       

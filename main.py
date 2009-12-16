@@ -20,6 +20,7 @@ site_domain = Datum.get('site_domain')
 site_name = Datum.get('site_name')
 site_author = Datum.get('site_author')
 site_slogan = Datum.get('site_slogan')
+site_analytics = Datum.get('site_analytics')
 site_updated = Datum.get('site_updated')
 if site_updated is None:
   site_updated = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
@@ -37,6 +38,9 @@ template_values = {
   'site_slogan' : site_slogan,
   'feed_url' : feed_url
 }
+
+if site_analytics is not None:
+  template_values['site_analytics'] = site_analytics
 
 class MainHandler(webapp.RequestHandler):
   def get(self):
