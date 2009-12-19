@@ -31,6 +31,45 @@
 	<br />
 	<textarea class="ml" name="content">{% if article.content %}{{ article.content|escape }}{% endif %}</textarea>
 	<br /><br />
+	Format<br />
+	{% ifequal page_mode 'new' %}
+	<select name="format">
+		{% ifequal site_default_format 'html' %}
+		<option value="html" selected="selected">HTML</option>
+		{% else %}
+		<option value="html">HTML</option>
+		{% endifequal %}
+		{% ifequal site_default_format 'markdown' %}
+		<option value="markdown" selected="selected">Markdown</option>
+		{% else %}
+		<option value="markdown">Markdown</option>
+		{% endifequal %}
+		{% ifequal site_default_format 'txt' %}
+		<option value="txt" selected="selected">Plain Text</option>
+		{% else %}
+		<option value="txt">Plain Text</option>
+		{% endifequal %}
+	</select>
+	{% else %}
+	<select name="format">
+		{% ifequal article.format 'html' %}
+		<option value="html" selected="selected">HTML</option>
+		{% else %}
+		<option value="html">HTML</option>
+		{% endifequal %}
+		{% ifequal article.format 'markdown' %}
+		<option value="markdown" selected="selected">Markdown</option>
+		{% else %}
+		<option value="markdown">Markdown</option>
+		{% endifequal %}
+		{% ifequal article.format 'txt' %}
+		<option value="txt" selected="selected">Plain Text</option>
+		{% else %}
+		<option value="txt">Plain Text</option>
+		{% endifequal %}
+	</select>
+	{% endifequal %}
+	<br /><br />
 	<small>Is Page: {% if article.is_page %}
 	<select name="is_page"><option value="True" selected="selected">Yes</option><option value="False">No</option></select>
 	{% else %}

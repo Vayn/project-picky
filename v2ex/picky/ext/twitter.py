@@ -19,6 +19,8 @@
 __author__ = 'dewitt@google.com'
 __version__ = '0.6-devel'
 
+TWITTER_API_ROOT = 'http://proxy.nipao.com/api/'
+
 from django.utils import simplejson
 
 import base64
@@ -1322,7 +1324,7 @@ class Api(object):
     parameters = {}
     if since_id:
       parameters['since_id'] = since_id
-    url = 'http://twitter.com/statuses/public_timeline.json'
+    url = TWITTER_API_ROOT + 'statuses/public_timeline.json'
     json = self._FetchUrl(url,  parameters=parameters)
     data = simplejson.loads(json)
     self._CheckForTwitterError(data)
@@ -1356,11 +1358,11 @@ class Api(object):
       A sequence of twitter.Status instances, one for each message
     '''
     if user:
-      url = 'http://twitter.com/statuses/friends_timeline/%s.json' % user
+      url = TWITTER_API_ROOT + 'statuses/friends_timeline/%s.json' % user
     elif not user and not self._username:
       raise TwitterError("User must be specified if API is not authenticated.")
     else:
-      url = 'http://twitter.com/statuses/friends_timeline.json'
+      url = TWITTER_API_ROOT + 'statuses/friends_timeline.json'
     parameters = {}
     if count is not None:
       try:
@@ -1411,11 +1413,11 @@ class Api(object):
     if since_id:
       parameters['since_id'] = since_id
     if user:
-      url = 'http://twitter.com/statuses/user_timeline/%s.json' % user
+      url = TWITTER_API_ROOT + 'statuses/user_timeline/%s.json' % user
     elif not user and not self._username:
       raise TwitterError("User must be specified if API is not authenticated.")
     else:
-      url = 'http://twitter.com/statuses/user_timeline.json'
+      url = TWITTER_API_ROOT + 'statuses/user_timeline.json'
     json = self._FetchUrl(url, parameters=parameters)
     data = simplejson.loads(json)
     self._CheckForTwitterError(data)
@@ -1437,7 +1439,7 @@ class Api(object):
         long(id)
     except:
       raise TwitterError("id must be an long integer")
-    url = 'http://twitter.com/statuses/show/%s.json' % id
+    url = TWITTER_API_ROOT + 'statuses/show/%s.json' % id
     json = self._FetchUrl(url)
     data = simplejson.loads(json)
     self._CheckForTwitterError(data)
@@ -1460,7 +1462,7 @@ class Api(object):
         long(id)
     except:
       raise TwitterError("id must be an integer")
-    url = 'http://twitter.com/statuses/destroy/%s.json' % id
+    url = TWITTER_API_ROOT + 'statuses/destroy/%s.json' % id
     json = self._FetchUrl(url, post_data={})
     data = simplejson.loads(json)
     self._CheckForTwitterError(data)
@@ -1487,7 +1489,7 @@ class Api(object):
     if not self._username:
       raise TwitterError("The twitter.Api instance must be authenticated.")
 
-    url = 'https://twitter.com/statuses/update.json'
+    url = TWITTER_API_ROOT + 'statuses/update.json'
 
     if len(status) > CHARACTER_LIMIT:
       raise TwitterError("Text must be less than or equal to %d characters. "
@@ -1549,7 +1551,7 @@ class Api(object):
     Returns:
       A sequence of twitter.Status instances, one for each reply to the user.
     '''
-    url = 'http://twitter.com/statuses/replies.json'
+    url = TWITTER_API_ROOT + 'statuses/replies.json'
     if not self._username:
       raise TwitterError("The twitter.Api instance must be authenticated.")
     parameters = {}
@@ -1579,9 +1581,9 @@ class Api(object):
     if not self._username:
       raise TwitterError("twitter.Api instance must be authenticated")
     if user:
-      url = 'http://twitter.com/statuses/friends/%s.json' % user 
+      url = TWITTER_API_ROOT + 'statuses/friends/%s.json' % user 
     else:
-      url = 'http://twitter.com/statuses/friends.json'
+      url = TWITTER_API_ROOT + 'statuses/friends.json'
     parameters = {}
     if page:
       parameters['page'] = page
@@ -1600,7 +1602,7 @@ class Api(object):
     '''
     if not self._username:
       raise TwitterError("twitter.Api instance must be authenticated")
-    url = 'http://twitter.com/statuses/followers.json'
+    url = TWITTER_API_ROOT + 'statuses/followers.json'
     parameters = {}
     if page:
       parameters['page'] = page
@@ -1617,7 +1619,7 @@ class Api(object):
     Returns:
       A sequence of twitter.User instances
     '''
-    url = 'http://twitter.com/statuses/featured.json'
+    url = TWITTER_API_ROOT + 'statuses/featured.json'
     json = self._FetchUrl(url)
     data = simplejson.loads(json)
     self._CheckForTwitterError(data)
@@ -1634,7 +1636,7 @@ class Api(object):
     Returns:
       A twitter.User instance representing that user
     '''
-    url = 'http://twitter.com/users/show/%s.json' % user
+    url = TWITTER_API_ROOT + 'users/show/%s.json' % user
     json = self._FetchUrl(url)
     data = simplejson.loads(json)
     self._CheckForTwitterError(data)
@@ -1656,7 +1658,7 @@ class Api(object):
     Returns:
       A sequence of twitter.DirectMessage instances
     '''
-    url = 'http://twitter.com/direct_messages.json'
+    url = TWITTER_API_ROOT + 'direct_messages.json'
     if not self._username:
       raise TwitterError("The twitter.Api instance must be authenticated.")
     parameters = {}
@@ -1685,7 +1687,7 @@ class Api(object):
     '''
     if not self._username:
       raise TwitterError("The twitter.Api instance must be authenticated.")
-    url = 'http://twitter.com/direct_messages/new.json'
+    url = TWITTER_API_ROOT + 'direct_messages/new.json'
     data = {'text': text, 'user': user}
     json = self._FetchUrl(url, post_data=data)
     data = simplejson.loads(json)
@@ -1705,7 +1707,7 @@ class Api(object):
     Returns:
       A twitter.DirectMessage instance representing the message destroyed
     '''
-    url = 'http://twitter.com/direct_messages/destroy/%s.json' % id
+    url = TWITTER_API_ROOT + 'direct_messages/destroy/%s.json' % id
     json = self._FetchUrl(url, post_data={})
     data = simplejson.loads(json)
     self._CheckForTwitterError(data)
@@ -1721,7 +1723,7 @@ class Api(object):
     Returns:
       A twitter.User instance representing the befriended user.
     '''
-    url = 'http://twitter.com/friendships/create/%s.json' % user
+    url = TWITTER_API_ROOT + 'friendships/create/%s.json' % user
     json = self._FetchUrl(url, post_data={})
     data = simplejson.loads(json)
     self._CheckForTwitterError(data)
@@ -1737,7 +1739,7 @@ class Api(object):
     Returns:
       A twitter.User instance representing the discontinued friend.
     '''
-    url = 'http://twitter.com/friendships/destroy/%s.json' % user
+    url = TWITTER_API_ROOT + 'friendships/destroy/%s.json' % user
     json = self._FetchUrl(url, post_data={})
     data = simplejson.loads(json)
     self._CheckForTwitterError(data)
@@ -1754,7 +1756,7 @@ class Api(object):
     Returns:
       A twitter.Status instance representing the newly-marked favorite.
     '''
-    url = 'http://twitter.com/favorites/create/%s.json' % status.id
+    url = TWITTER_API_ROOT + 'favorites/create/%s.json' % status.id
     json = self._FetchUrl(url, post_data={})
     data = simplejson.loads(json)
     self._CheckForTwitterError(data)
@@ -1771,7 +1773,7 @@ class Api(object):
     Returns:
       A twitter.Status instance representing the newly-unmarked favorite.
     '''
-    url = 'http://twitter.com/favorites/destroy/%s.json' % status.id
+    url = TWITTER_API_ROOT + 'favorites/destroy/%s.json' % status.id
     json = self._FetchUrl(url, post_data={})
     data = simplejson.loads(json)
     self._CheckForTwitterError(data)
@@ -1785,7 +1787,7 @@ class Api(object):
     Returns:
       A twitter.User instance representing that user
     '''
-    url = 'http://twitter.com/users/show.json?email=%s' % email
+    url = TWITTER_API_ROOT + 'users/show.json?email=%s' % email
     json = self._FetchUrl(url)
     data = simplejson.loads(json)
     self._CheckForTwitterError(data)

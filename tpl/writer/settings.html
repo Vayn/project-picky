@@ -24,6 +24,36 @@
 	<br /><br />
 	Google Analytics ID <small class="snow">e.g. UA-11940834-1</small><br />
 	<input type="text" class="sls" name="site_analytics" value="{% if site_analytics %}{{ site_analytics|escape }}{% endif %}" />
+	<br /><br />
+	Theme<br />
+	<select name="site_theme">
+		{% for theme in themes %}
+		{% ifequal site_theme theme %}
+		<option value="{{ theme }}" selected="selected">{{ theme }}</option>
+		{% else %}
+		<option value="{{ theme }}">{{ theme }}</option>
+		{% endifequal %}
+		{% endfor %}
+	</select>
+	<br /><br />
+	Default Format for New Post<br />
+	<select name="site_default_format">
+		{% ifequal site_default_format 'html' %}
+		<option value="html" selected="selected">HTML</option>
+		{% else %}
+		<option value="html">HTML</option>
+		{% endifequal %}
+		{% ifequal site_default_format 'markdown' %}
+		<option value="markdown" selected="selected">Markdown</option>
+		{% else %}
+		<option value="markdown">Markdown</option>
+		{% endifequal %}
+		{% ifequal site_default_format 'txt' %}
+		<option value="txt" selected="selected">Plain Text</option>
+		{% else %}
+		<option value="txt">Plain Text</option>
+		{% endifequal %}
+	</select>
 	<div class="sep"></div>
 	<h1>Twitter</h1>
 	<div class="sep10"></div>

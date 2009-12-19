@@ -30,13 +30,21 @@ if feed_url is None:
 else:
   if len(feed_url) == 0:
     feed_url = '/index.xml'
+    
+site_theme = Datum.get('site_theme')
+if site_theme is None:
+  site_theme = 'default'
+themes = os.listdir(os.path.join(os.path.dirname(__file__), 'tpl', 'themes'))
+if site_theme not in themes:
+  site_theme = 'default'
 
 template_values = {
   'site_domain' : site_domain,
   'site_name' : site_name,
   'site_author' : site_author,
   'site_slogan' : site_slogan,
-  'feed_url' : feed_url
+  'feed_url' : feed_url,
+  'site_theme' : site_theme
 }
 
 if site_analytics is not None:
@@ -55,7 +63,7 @@ class MainHandler(webapp.RequestHandler):
     template_values['pages'] = pages
     template_values['pages_total'] = pages.count()
     template_values['page_archive'] = False
-    path = os.path.join(os.path.dirname(__file__), 'tpl', 'index.html')
+    path = os.path.join(os.path.dirname(__file__), 'tpl', 'themes', site_theme, 'index.html')
     self.response.out.write(template.render(path, template_values))
 
 class ArchiveHandler(webapp.RequestHandler):
@@ -67,13 +75,16 @@ class ArchiveHandler(webapp.RequestHandler):
         articles = db.GqlQuery("SELECT * FROM Article WHERE is_page = FALSE ORDER BY created DESC")
         memcache.add("archive", articles, 3600)
       pages = db.GqlQuery("SELECT * FROM Article WHERE is_page = TRUE AND is_for_sidebar = TRUE ORDER BY title ASC")
-      template_values['page_title'] = site_name + ' Archive'
+      if site_name is not None:
+        template_values['page_title'] = site_name + ' Archive'
+      else:
+        template_values['page_title'] = 'Project Picky Archive'
       template_values['articles'] = articles
       template_values['articles_total'] = articles.count()
       template_values['pages'] = pages
       template_values['pages_total'] = pages.count()
       template_values['page_archive'] = True
-      path = os.path.join(os.path.dirname(__file__), 'tpl', 'index.html')
+      path = os.path.join(os.path.dirname(__file__), 'tpl', 'themes', site_theme, 'index.html')
       output = template.render(path, template_values)
       memcache.add('archive_output', output, 1800)
     self.response.out.write(output)
@@ -103,12 +114,12 @@ class ArticleHandler(webapp.RequestHandler):
       template_values['article'] = article
       template_values['pages'] = pages
       template_values['pages_total'] = pages.count()
-      path = os.path.join(os.path.dirname(__file__), 'tpl', 'article.html')
+      path = os.path.join(os.path.dirname(__file__), 'tpl', 'themes', site_default, 'article.html')
       self.response.out.write(template.render(path, template_values))
     else:
       template_values['pages'] = pages
       template_values['pages_total'] = pages.count()
-      path = os.path.join(os.path.dirname(__file__), 'tpl', '404.html')
+      path = os.path.join(os.path.dirname(__file__), 'tpl', 'themes', site_default, '404.html')
       self.response.out.write(template.render(path, template_values))
 
 class AtomFeedHandler(webapp.RequestHandler):
@@ -117,7 +128,7 @@ class AtomFeedHandler(webapp.RequestHandler):
     template_values['articles'] = articles
     template_values['articles_total'] = articles.count()
     template_values['site_updated'] = site_updated
-    path = os.path.join(os.path.dirname(__file__), 'tpl', 'index.xml')
+    path = os.path.join(os.path.dirname(__file__), 'tpl', 'shared', 'index.xml')
     self.response.headers['Content-type'] = 'text/xml; charset=UTF-8'
     self.response.out.write(template.render(path, template_values))
 
@@ -127,13 +138,13 @@ class AtomSitemapHandler(webapp.RequestHandler):
     template_values['articles'] = articles
     template_values['articles_total'] = articles.count()
     template_values['site_updated'] = site_updated
-    path = os.path.join(os.path.dirname(__file__), 'tpl', 'sitemap.xml')
+    path = os.path.join(os.path.dirname(__file__), 'tpl', 'shared', 'sitemap.xml')
     self.response.headers['Content-type'] = 'text/xml; charset=UTF-8'
     self.response.out.write(template.render(path, template_values))
     
 class RobotsHandler(webapp.RequestHandler):
   def get(self):
-    path = os.path.join(os.path.dirname(__file__), 'tpl', 'robots.txt')
+    path = os.path.join(os.path.dirname(__file__), 'tpl', 'shared', 'robots.txt')
     self.response.headers['Content-type'] = 'text/plain; charset=UTF-8'
     self.response.out.write(template.render(path, template_values))
 

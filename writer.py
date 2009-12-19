@@ -6,11 +6,16 @@ import time
 import cgi
 import urllib
 import wsgiref.handlers
+import markdown
 
 from v2ex.picky import Article
 from v2ex.picky import Datum
+
+from v2ex.picky import formats as CONTENT_FORMATS
+
 from v2ex.picky.misc import reminder
 from v2ex.picky.misc import message
+
 from v2ex.picky.ext import feedparser
 from v2ex.picky.ext import twitter
 from v2ex.picky.ext.sessions import Session
@@ -24,6 +29,7 @@ from google.appengine.ext import db
 from google.appengine.api import users
 
 from django.core.paginator import ObjectPaginator, InvalidPage
+from django.utils import simplejson
 
 site_domain = Datum.get('site_domain')
 site_name = Datum.get('site_name')
@@ -36,10 +42,12 @@ user = users.get_current_user()
 # GLOBALS
 
 PAGE_SIZE = 10
+TWITTER_API_ROOT = 'http://proxy.nipao.com/api/'
 
 class WriterOverviewHandler(webapp.RequestHandler):
   def get(self):
-    articles = Article.all().order("-created")
+    site_default_format = Datum.get('site_default_format')
+    articles = Article.all().order('-created')
     paginator = ObjectPaginator(articles, PAGE_SIZE)
     try:
       page = int(self.request.get('page', 0))
@@ -86,13 +94,17 @@ class WriterOverviewHandler(webapp.RequestHandler):
     mentions_twitter = memcache.get('mentions_twitter')
     if mentions_twitter is None:
       try:
-        mentions_twitter = feedparser.parse('https://search.twitter.com/search.atom?q=' + urllib.quote(Datum.get('site_domain')))
-        memcache.add('mentions_twitter', mentions_twitter, 3600)
+        result = urlfetch.fetch(TWITTER_API_ROOT + 'search.json?q=' + urllib.quote(Datum.get('site_domain')))
+        if result.status_code == 200:
+          mentions_twitter = simplejson.loads(result.content)
+          #self.response.out.write(unicode(twitter_json['results'][0]['text']))
+        #mentions_twitter = feedparser.parse(TWITTER_API_ROOT + 'search.json?q=' + urllib.quote(Datum.get('site_domain')))
+        memcache.add('mentions_twitter', mentions_twitter, 600)
       except:
         mentions_twitter = None
     if mentions_twitter is not None:
-      if len(mentions_twitter.entries) > 0:
-        template_values['mentions_twitter'] = mentions_twitter.entries
+      if len(mentions_twitter['results']) > 0:
+        template_values['mentions_twitter'] = mentions_twitter['results']
     path = os.path.join(os.path.dirname(__file__), 'tpl', 'writer', 'overview.html')
     self.response.out.write(template.render(path, template_values))
 
@@ -103,6 +115,9 @@ class WriterSettingsHandler(webapp.RequestHandler):
     site_author = Datum.get('site_author')
     site_slogan = Datum.get('site_slogan')
     site_analytics = Datum.get('site_analytics')
+    site_default_format = Datum.get('site_default_format')
+    if site_default_format is None:
+      site_default_format = 'html'
     twitter_account = Datum.get('twitter_account')
     twitter_password = Datum.get('twitter_password')
     twitter_sync = None
@@ -114,16 +129,21 @@ class WriterSettingsHandler(webapp.RequestHandler):
     else:
       twitter_sync = False
     feed_url = Datum.get('feed_url')
+    themes = os.listdir(os.path.join(os.path.dirname(__file__), 'tpl', 'themes'))
+    site_theme = Datum.get('site_theme')
     template_values = {
       'site_domain' : site_domain,
       'site_name' : site_name,
       'site_author' : site_author,
       'site_slogan' : site_slogan,
       'site_analytics' : site_analytics,
+      'site_default_format' : site_default_format,
       'twitter_account' : twitter_account,
       'twitter_password' : twitter_password,
       'twitter_sync' : twitter_sync,
-      'feed_url' : feed_url
+      'feed_url' : feed_url,
+      'themes' : themes,
+      'site_theme' : site_theme
     }
     if site_analytics is not None:
       template_values['site_analytics'] = site_analytics
@@ -138,6 +158,10 @@ class WriterSettingsHandler(webapp.RequestHandler):
     Datum.set('site_author', self.request.get('site_author'))
     Datum.set('site_slogan', self.request.get('site_slogan'))
     Datum.set('site_analytics', self.request.get('site_analytics'))
+    if self.request.get('site_default_format') not in CONTENT_FORMATS:
+      Datum.set('site_default_format', 'html')
+    else:
+      Datum.set('site_default_format', self.request.get('site_default_format'))
     Datum.set('twitter_account', self.request.get('twitter_account'))
     Datum.set('twitter_password', self.request.get('twitter_password'))
     
@@ -156,13 +180,23 @@ class WriterSettingsHandler(webapp.RequestHandler):
     
     Datum.set('feed_url', self.request.get('feed_url'))
     
+    themes = os.listdir(os.path.join(os.path.dirname(__file__), 'tpl', 'themes'))
+    if self.request.get('site_theme') in themes:
+      Datum.set('site_theme', self.request.get('site_theme'))
+    else:
+      Datum.set('site_theme', 'default')
+    
+    memcache.delete('mentions_twitter')
+    
     self.redirect('/writer/settings')
     
 class WriterWriteHandler(webapp.RequestHandler):
   def get(self, key = ''):
+    site_default_format = Datum.get('site_default_format')
     if (key):
       article = db.get(db.Key(key))
       template_values = {
+        'site_default_format' : site_default_format,
         'article' : article,
         'page_mode' : 'edit',
         'page_title' : 'Edit Article',
@@ -170,6 +204,7 @@ class WriterWriteHandler(webapp.RequestHandler):
       }
     else:
       template_values = {
+        'site_default_format' : site_default_format,
         'page_mode' : 'new',
         'page_title' : 'New Article',
         'page_reminder': reminder.writer_write
@@ -193,6 +228,7 @@ class WriterSynchronizeHandler(webapp.RequestHandler):
     self.redirect('/')
     
   def post(self, key = ''):
+    site_default_format = Datum.get('site_default_format')
     if (self.request.get('content') != ''):
       if (key):
         article = db.get(db.Key(key))
@@ -201,6 +237,11 @@ class WriterSynchronizeHandler(webapp.RequestHandler):
         article.title_url = self.request.get('title_url')
         article.parent_url = self.request.get('parent_url')
         article.content = self.request.get('content')
+        article.format = self.request.get('format')
+        if article.format not in CONTENT_FORMATS:
+          article.format = site_default_format
+        if article.format == 'markdown':
+          article.content_formatted = markdown.markdown(article.content)
         if (self.request.get('is_page') == 'True'):
           article.is_page = True
         else:
@@ -217,6 +258,11 @@ class WriterSynchronizeHandler(webapp.RequestHandler):
         article.title_url = self.request.get('title_url')
         article.parent_url = self.request.get('parent_url')
         article.content = self.request.get('content')
+        article.format = self.request.get('format')
+        if article.format not in CONTENT_FORMATS:
+          article.format = site_default_format
+        if article.format == 'markdown':
+          article.content_formatted = markdown.markdown(article.content)
         if (self.request.get('is_page') == 'True'):
           article.is_page = True
         else:
@@ -228,7 +274,7 @@ class WriterSynchronizeHandler(webapp.RequestHandler):
         article.put()
         # Ping Twitter
         twitter_sync = Datum.get('twitter_sync')
-        if twitter_sync == 'True':  
+        if twitter_sync == 'True' and article.is_page is False:  
           twitter_account = Datum.get('twitter_account')
           twitter_password = Datum.get('twitter_password')
           if twitter_account != '' and twitter_password != '':
@@ -257,6 +303,9 @@ class WriterSynchronizeHandler(webapp.RequestHandler):
       article.title_link = self.request.get('title_link')
       article.title_url = self.request.get('title_url')
       article.content = self.request.get('content')
+      article.format = self.request.get('format')
+      if article.format not in CONTENT_FORMATS:
+        article.format = site_default_format
       if (self.request.get('is_page') == 'True'):
         article.is_page = True
       else:
@@ -266,6 +315,7 @@ class WriterSynchronizeHandler(webapp.RequestHandler):
       else:
         article.is_for_sidebar = False
       template_values = {
+        'site_default_format' : site_default_format,
         'article' : article,
         'page_mode' : 'new',
         'page_title' : 'New Article',

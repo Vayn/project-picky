@@ -25,7 +25,15 @@
 				{% else %}
 				<div class="content">
 				{% endif %}
-				{{ article.content}}
+				{% ifequal article.format 'markdown' %}
+					{{ article.content_formatted }}
+				{% else %}
+					{% ifequal article.format 'txt' %}
+						{{ article.content|linebreaksbr }}
+					{% else %}
+						{{ article.content }}
+					{% endifequal %}
+				{% endifequal %}
 				<div class="misc">{{ article.created|date:"M-j G:i" }}&nbsp;<a href="/{{ article.title_url }}" class="img" title="Permalink to {{ article.title|escape }}">&nbsp;<img src="/static/shared/link.png" border="0" align="absmiddle" alt="Permalink to {{ article.title|escape }}" />&nbsp;</a></div>
 				</div>
 				{% endfor %}

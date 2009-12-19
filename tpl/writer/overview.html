@@ -1,7 +1,7 @@
 {% include 'header.html' %}
 <div id="Main">
 	<div id="Mentions">
-		<strong>Latest Mentions on Web</strong>
+		<strong>Mentions on Web</strong>
 		{% if mentions_web %}
 		<ul>
 			{% for mention in mentions_web %}
@@ -12,11 +12,11 @@
 		<p class="snow">Currently no one mentioned you.</p>
 		{% endif %}
 		<div class="sep"></div>
-		<strong>Latest Mentions on Twitter</strong>
+		<strong><img src="/static/shared/twitter.png" align="absmiddle" /> Mentions on Twitter</strong>
 		{% if mentions_twitter %}
 		<ul>
 			{% for mention in mentions_twitter %}
-			<li>{{ mention.title }} <span class="fade">by</span> <a href="{{ mention.author_detail.href }}" target="_blank">{{ mention.author_detail.name }}</a></li>
+			<li>{{ mention.text|urlize }} <span class="fade">by</span> <a href="https://twitter.com/{{ mention.from_user }}" target="_blank">{{ mention.from_user }}</a></li>
 			{% endfor %}
 		</ul>
 		{% else %}
@@ -42,7 +42,7 @@
 		{% for article in articles %}
 		<tr>
 			<td class="{% if forloop.counter|divisibleby:2 %}alt{% endif %}"></td>
-			<td class="{% if forloop.counter|divisibleby:2 %}alt{% endif %}"><a href="/writer/edit/{{ article.key }}" class="dark">{% if article.title %}{{ article.title }}{% else %}Untitled{% endif %}</a> <a href="/{{ article.title_url }}" target="_blank">&nbsp;»&nbsp;</a> {% if article.is_page %}<div class="blue_badge">PAGE</div>{% if article.is_for_sidebar %}{% else %} <div class="graphite_badge">ISOLATED</div>{% endif %}{% endif %}{% if article.title_url %}<div><small class="snow">URL: {{ article.title_url }}</small></div>{% endif %}<div class="op"><a href="#;" onclick="if (confirm('Are you sure?')) { location.href = '/writer/remove/{{ article.key }}';}">Delete</a></div></td>
+			<td class="{% if forloop.counter|divisibleby:2 %}alt{% endif %}"><a href="/writer/edit/{{ article.key }}" class="dark">{% if article.title %}{{ article.title }}{% else %}Untitled{% endif %}</a> <a href="/{{ article.title_url }}" target="_blank">&nbsp;»&nbsp;</a> {% if article.is_page %}<div class="blue_badge">PAGE</div>{% if article.is_for_sidebar %}{% else %} <div class="graphite_badge">ISOLATED</div>{% endif %}{% endif %}{% if article.title_url %}<div><small class="snow">{{ article.format }} : {{ article.title_url }}</small></div>{% endif %}<div class="op"><a href="#;" onclick="if (confirm('Are you sure?')) { location.href = '/writer/remove/{{ article.key }}';}">Delete</a></div></td>
 			<td class="dt {% if forloop.counter|divisibleby:2 %}alt{% endif %}">{{ article.created|date:"Y-m-d H:i:s" }}</td>
 			<td class="dt {% if forloop.counter|divisibleby:2 %}alt{% endif %}">{{ article.last_modified|date:"Y-m-d H:i:s" }}</td>
 			<td class="{% if forloop.counter|divisibleby:2 %}alt{% endif %}" align="right">{{ article.hits }}</td>

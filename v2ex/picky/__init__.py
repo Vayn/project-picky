@@ -4,6 +4,8 @@ from google.appengine.ext import db
 from google.appengine.api import memcache
 from google.appengine.api import users
 
+formats = set(['html', 'txt', 'markdown'])
+
 class Article(db.Model):
   title = db.StringProperty(required=False, indexed=True)
   title_link = db.StringProperty(required=False, indexed=True)
@@ -12,6 +14,8 @@ class Article(db.Model):
   is_page = db.BooleanProperty(required=True, default=False)
   is_for_sidebar = db.BooleanProperty(required=True, default=False)
   content = db.TextProperty()
+  content_formatted = db.TextProperty()
+  format = db.StringProperty(required=True, default='html', indexed=True)
   created = db.DateTimeProperty(auto_now_add=True)
   last_modified = db.DateTimeProperty(auto_now=True)
   hits = db.IntegerProperty(default=0)
