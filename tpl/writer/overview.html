@@ -55,13 +55,15 @@
 		{% endifequal %}
 	</table>
 	{% if is_paginated %}
-	<br />
+	<div id="Pages">
+		<div id="Numbers">{% for p in page_range %}{% ifequal p page %}{{ p|add:"1" }}&nbsp;{% else %}<a href="/writer/overview?page={{ p }}" class="page">{{ p|add:"1" }}</a>&nbsp;{% endifequal %}{% endfor %}</div>
 	{% if page_has_next %}
 	<input type="button" class="btn" value="Next" onclick="location.href='/writer/overview?page={{ next }}';" />
 	{% endif %}
 	{% if page_has_previous %}
 	<input type="button" class="btn" value="Previous" onclick="location.href='/writer/overview?page={{ previous }}';" />
 	{% endif %}
+	</div>
 	{% endif %}
 	<div class="c"></div>
 </div>

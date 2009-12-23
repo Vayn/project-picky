@@ -47,7 +47,10 @@ TWITTER_API_ROOT = 'http://proxy.nipao.com/api/'
 class WriterOverviewHandler(webapp.RequestHandler):
   def get(self):
     site_default_format = Datum.get('site_default_format')
-    articles = Article.all().order('-created')
+    articles = memcache.get('writer_articles')
+    if articles is None:
+      articles = Article.all().order('-created')
+      memcache.set('writer_articles', articles, 3600)
     paginator = ObjectPaginator(articles, PAGE_SIZE)
     try:
       page = int(self.request.get('page', 0))
@@ -71,12 +74,13 @@ class WriterOverviewHandler(webapp.RequestHandler):
       'page_size' : PAGE_SIZE,
       'page_has_next' : paginator.has_next_page(page),
       'page_has_previous' : paginator.has_previous_page(page),
-      'page' : page + 1,
+      'page' : page,
       'next' : page + 1,
       'previous' : page - 1,
       'pages' : paginator.pages,
       'articles' : articles,
-      'articles_total' : len(articles)
+      'articles_total' : len(articles),
+      'page_range' : range(0, paginator.pages)
     }
     if site_analytics is not None:
       template_values['site_analytics'] = site_analytics
@@ -97,9 +101,7 @@ class WriterOverviewHandler(webapp.RequestHandler):
         result = urlfetch.fetch(TWITTER_API_ROOT + 'search.json?q=' + urllib.quote(Datum.get('site_domain')))
         if result.status_code == 200:
           mentions_twitter = simplejson.loads(result.content)
-          #self.response.out.write(unicode(twitter_json['results'][0]['text']))
-        #mentions_twitter = feedparser.parse(TWITTER_API_ROOT + 'search.json?q=' + urllib.quote(Datum.get('site_domain')))
-        memcache.add('mentions_twitter', mentions_twitter, 600)
+          memcache.add('mentions_twitter', mentions_twitter, 3600)
       except:
         mentions_twitter = None
     if mentions_twitter is not None:
@@ -284,7 +286,11 @@ class WriterSynchronizeHandler(webapp.RequestHandler):
             except:
               api = None
       memcache.delete('archive')
+      memcache.delete('archive_output')
+      memcache.delete('feed_output')
       memcache.delete('index')
+      memcache.delete('index_output')
+      memcache.delete('writer_articles')
       Datum.set('site_updated', time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()))
       # Ping Google Blog Search
       try:

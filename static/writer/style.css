@@ -76,6 +76,7 @@ h1 {
 	background-color: #f5f5f5;
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
+	border-radius: 5px;
 	width: 200px;
 	margin-bottom: 15px;
 }
@@ -103,6 +104,21 @@ h1 {
 	-webkit-border-top-right-radius: 0px;
 	-webkit-border-bottom-left-radius: 0px;
 	-webkit-border-bottom-right-radius: 0px;
+	border-radius: 0px 0px 5px 5px;
+}
+
+#Pages {
+	padding-top: 20px;
+	width: 700px;
+}
+
+#Pages #Numbers {
+	padding-top: 5px;
+	float: right;
+	font-size: 22px;
+	line-height: 22px;
+	font-family: "Arial Black";
+	color: #000;
 }
 
 #Footer {
@@ -138,6 +154,7 @@ h1 {
 	border: 1px solid #ccc;
 	-moz-border-radius: 3px;
 	-webkit-border-radius: 3px;
+	border-radius: 3px;
 	width: 700px;
 }
 
@@ -174,6 +191,7 @@ h1 {
 	padding: 3px;
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
+	border-radius: 5px;
 	width: 600px;
 	font-size: 16px;
 	color: #000;
@@ -190,6 +208,7 @@ h1 {
 	padding: 3px;
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
+	border-radius: 5px;
 	width: 200px;
 	font-size: 16px;
 	color: #000;
@@ -206,6 +225,7 @@ h1 {
 	padding: 3px;
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
+	border-radius: 5px;
 	width: 600px;
 	height: 300px;
 	font-size: 16px;
@@ -226,6 +246,7 @@ h1 {
 	font-size: 14px;
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
+	border-radius: 5px;
 	background-color: #f0f0f0;
 }
 
@@ -283,6 +304,7 @@ a.white:hover {
 	padding: 3px 5px 3px 5px;
 	-moz-border-radius: 3px;
 	-webkit-border-radius: 3px;
+	border-radius: 3px;
 	display: inline-block;
 }
 
@@ -294,6 +316,7 @@ a.white:hover {
 	padding: 3px 5px 3px 5px;
 	-moz-border-radius: 3px;
 	-webkit-border-radius: 3px;
+	border-radius: 3px;
 	display: inline-block;
 }
 
@@ -317,4 +340,16 @@ a.white:hover {
 
 .c {
 	clear: both;
+}
+
+a.page:link, a.page:visited, a.page:active {
+	color: #ccc;
+	text-decoration: none;
+	border: none;
+}
+
+a.page:hover {
+	color: #000;
+	text-decoration: none;
+	border: none;
 }

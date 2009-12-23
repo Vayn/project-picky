@@ -19,6 +19,11 @@ class Article(db.Model):
   created = db.DateTimeProperty(auto_now_add=True)
   last_modified = db.DateTimeProperty(auto_now=True)
   hits = db.IntegerProperty(default=0)
+
+class Comment(db.Model):
+  author_name = db.StringProperty(required=False, indexed=True)
+  author_email = db.StringProperty(required=False, indexed=True)
+  author_site = db.StringProperty(required=False, indexed=True)
   
 class Datum(db.Model):
   title = db.StringProperty(required=False, indexed=True)

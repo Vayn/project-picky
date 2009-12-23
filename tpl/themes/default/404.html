@@ -2,17 +2,7 @@
 <body>
 	<div id="Root">
 		<div id="Top"><a href="/" class="img"><img src="/static/themes/default/logo.png" alt="Project Picky" id="Logo" /></a></div>
-		<div id="Sidebar">
-			<div class="inner">
-				<ul id="Nav">
-					{% for page in pages %}
-					<li><a href="/{{ page.title_url }}">{{ page.title|upper }}</a></li>
-					{% endfor %}
-					<li><a href="{{ feed_url }}">RSS</a></li>
-					<li><a href="/archive">ARCHIVE</a></li>
-				</ul>
-			</div>
-		</div>
+		{% include 'sidebar.html' %}
 		<div id="Main">
 			<div class="inner">
 				<div class="title">Page Not Found</div>

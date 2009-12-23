@@ -52,19 +52,23 @@ if site_analytics is not None:
 
 class MainHandler(webapp.RequestHandler):
   def get(self):
-    articles = memcache.get("index")
-    if articles is None:
-      articles = db.GqlQuery("SELECT * FROM Article WHERE is_page = FALSE ORDER BY created DESC LIMIT 12")
-      memcache.add("index", articles, 3600)
-    pages = db.GqlQuery("SELECT * FROM Article WHERE is_page = TRUE AND is_for_sidebar = TRUE ORDER BY title ASC")
-    template_values['page_title'] = Datum.get('site_name')
-    template_values['articles'] = articles
-    template_values['articles_total'] = articles.count()
-    template_values['pages'] = pages
-    template_values['pages_total'] = pages.count()
-    template_values['page_archive'] = False
-    path = os.path.join(os.path.dirname(__file__), 'tpl', 'themes', site_theme, 'index.html')
-    self.response.out.write(template.render(path, template_values))
+    output = memcache.get('index_output')
+    if output is None:
+      articles = memcache.get('index')
+      if articles is None:
+        articles = db.GqlQuery("SELECT * FROM Article WHERE is_page = FALSE ORDER BY created DESC LIMIT 12")
+        memcache.add("index", articles, 3600)
+      pages = db.GqlQuery("SELECT * FROM Article WHERE is_page = TRUE AND is_for_sidebar = TRUE ORDER BY title ASC")
+      template_values['page_title'] = Datum.get('site_name')
+      template_values['articles'] = articles
+      template_values['articles_total'] = articles.count()
+      template_values['pages'] = pages
+      template_values['pages_total'] = pages.count()
+      template_values['page_archive'] = False
+      path = os.path.join(os.path.dirname(__file__), 'tpl', 'themes', site_theme, 'index.html')
+      output = template.render(path, template_values)
+      memcache.set('index_output', output, 1800)
+    self.response.out.write(output)
 
 class ArchiveHandler(webapp.RequestHandler):
   def get(self):
@@ -124,13 +128,17 @@ class ArticleHandler(webapp.RequestHandler):
 
 class AtomFeedHandler(webapp.RequestHandler):
   def get(self):
-    articles = db.GqlQuery("SELECT * FROM Article WHERE is_page = FALSE ORDER BY created DESC LIMIT 20")
-    template_values['articles'] = articles
-    template_values['articles_total'] = articles.count()
-    template_values['site_updated'] = site_updated
-    path = os.path.join(os.path.dirname(__file__), 'tpl', 'shared', 'index.xml')
+    output = memcache.get('feed_output')
+    if output is None:
+      articles = db.GqlQuery("SELECT * FROM Article WHERE is_page = FALSE ORDER BY created DESC LIMIT 100")
+      template_values['articles'] = articles
+      template_values['articles_total'] = articles.count()
+      template_values['site_updated'] = site_updated
+      path = os.path.join(os.path.dirname(__file__), 'tpl', 'shared', 'index.xml')
+      output = template.render(path, template_values)
+      memcache.set('feed_output', output, 3600)
     self.response.headers['Content-type'] = 'text/xml; charset=UTF-8'
-    self.response.out.write(template.render(path, template_values))
+    self.response.out.write(output)
 
 class AtomSitemapHandler(webapp.RequestHandler):
   def get(self):
