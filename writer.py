@@ -42,7 +42,7 @@ user = users.get_current_user()
 # GLOBALS
 
 PAGE_SIZE = 10
-TWITTER_API_ROOT = 'http://proxy.nipao.com/api/'
+TWITTER_API_ROOT = 'http://saicn.com/tproxy/'
 
 class WriterOverviewHandler(webapp.RequestHandler):
   def get(self):
@@ -50,7 +50,7 @@ class WriterOverviewHandler(webapp.RequestHandler):
     articles = memcache.get('writer_articles')
     if articles is None:
       articles = Article.all().order('-created')
-      memcache.set('writer_articles', articles, 3600)
+      memcache.set('writer_articles', articles, 86400)
     paginator = ObjectPaginator(articles, PAGE_SIZE)
     try:
       page = int(self.request.get('page', 0))
@@ -68,6 +68,13 @@ class WriterOverviewHandler(webapp.RequestHandler):
     self.session = Session()
     if is_paginated:
       self.session['page'] = page
+    urls = memcache.get('writer_urls')
+    if urls is None:
+      everything = Article.all().order('-title_url')
+      urls = []
+      for article in everything:
+        urls.append(article.title_url)
+      memcache.set('writer_urls', urls, 86400)
     template_values = {
       'site_configured' : site_configured,
       'is_paginated' : is_paginated,
@@ -80,7 +87,8 @@ class WriterOverviewHandler(webapp.RequestHandler):
       'pages' : paginator.pages,
       'articles' : articles,
       'articles_total' : len(articles),
-      'page_range' : range(0, paginator.pages)
+      'page_range' : range(0, paginator.pages),
+      'urls' : urls
     }
     if site_analytics is not None:
       template_values['site_analytics'] = site_analytics
@@ -194,6 +202,11 @@ class WriterSettingsHandler(webapp.RequestHandler):
     
 class WriterWriteHandler(webapp.RequestHandler):
   def get(self, key = ''):
+    self.session = Session()
+    if 'page' in self.session:
+      page = self.session['page']
+    else:
+      page = 0
     site_default_format = Datum.get('site_default_format')
     if (key):
       article = db.get(db.Key(key))
@@ -202,14 +215,16 @@ class WriterWriteHandler(webapp.RequestHandler):
         'article' : article,
         'page_mode' : 'edit',
         'page_title' : 'Edit Article',
-        'page_reminder': reminder.writer_write
+        'page_reminder': reminder.writer_write,
+        'page' : page
       }
     else:
       template_values = {
         'site_default_format' : site_default_format,
         'page_mode' : 'new',
         'page_title' : 'New Article',
-        'page_reminder': reminder.writer_write
+        'page_reminder': reminder.writer_write,
+        'page' : page
       }
     if site_analytics is not None:
       template_values['site_analytics'] = site_analytics
@@ -230,6 +245,11 @@ class WriterSynchronizeHandler(webapp.RequestHandler):
     self.redirect('/')
     
   def post(self, key = ''):
+    self.session = Session()
+    if 'page' in self.session:
+      page = self.session['page']
+    else:
+      page = 0
     site_default_format = Datum.get('site_default_format')
     if (self.request.get('content') != ''):
       if (key):
@@ -285,12 +305,8 @@ class WriterSynchronizeHandler(webapp.RequestHandler):
               status = api.PostUpdate(article.title + ' http://' + site_domain + '/' + article.title_url)
             except:
               api = None
-      memcache.delete('archive')
-      memcache.delete('archive_output')
-      memcache.delete('feed_output')
-      memcache.delete('index')
-      memcache.delete('index_output')
-      memcache.delete('writer_articles')
+      obsolete = ['archive', 'archive_output', 'feed_output', 'index', 'index_output', 'writer_articles', 'writer_urls']
+      memcache.delete_multi(obsolete)
       Datum.set('site_updated', time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()))
       # Ping Google Blog Search
       try:
@@ -299,10 +315,7 @@ class WriterSynchronizeHandler(webapp.RequestHandler):
       except:
         taskqueue.add(url='/writer/ping')
       self.session = Session()
-      if 'page' in self.session:
-        self.redirect('/writer/overview?page=' + str(self.session['page']))
-      else:
-        self.redirect('/writer/overview')
+      self.redirect('/writer/overview?page=' + str(page))
     else:
       article = Article()
       article.title = self.request.get('title')
@@ -327,13 +340,26 @@ class WriterSynchronizeHandler(webapp.RequestHandler):
         'page_title' : 'New Article',
         'page_reminder': reminder.writer_write,
         'message' : message.content_empty,
-        'user_email' : user.email()
+        'user_email' : user.email(),
+        'page' : page
       }
       if site_analytics is not None:
         template_values['site_analytics'] = site_analytics
       path = os.path.join(os.path.dirname(__file__), 'tpl', 'writer', 'write.html')
       self.response.out.write(template.render(path, template_values))
       
+class WriterQuickFindHandler(webapp.RequestHandler):
+  def post(self):
+    qf = self.request.get('qf')
+    if qf is not None:
+      q = Article.all().filter('title_url = ', qf)
+      if q.count() == 1:
+        self.redirect('/writer/edit/' + str(q[0].key()))
+      else:
+        self.redirect(self.request.headers['REFERER'])
+    else:
+      self.redirect(self.request.headers['REFERER'])
+
 class WriterPingHandler(webapp.RequestHandler):
   def get(self):
     try:
@@ -356,7 +382,8 @@ def main():
   ('/writer/ping', WriterPingHandler),
   ('/writer/update/([0-9a-zA-Z\-]+)', WriterSynchronizeHandler),
   ('/writer/edit/([0-9a-zA-Z\-]+)', WriterWriteHandler),
-  ('/writer/remove/([0-9a-zA-Z\-]+)', WriterRemoveHandler)
+  ('/writer/remove/([0-9a-zA-Z\-]+)', WriterRemoveHandler),
+  ('/writer/quick/find', WriterQuickFindHandler)
   ],
                                        debug=True)
   wsgiref.handlers.CGIHandler().run(application)

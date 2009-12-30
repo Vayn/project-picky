@@ -1,6 +1,6 @@
 {% include 'header.html' %}
 <div id="Main">
-	<div id="Nav"><img src="/static/shared/home.png" align="absmiddle" class="ico16" />&nbsp;<a href="/writer/overview">Picky Backend</a> &nbsp;›&nbsp; {% ifequal page_mode 'new' %}New Article{% endifequal %}{% ifequal page_mode 'edit' %}Edit Article &nbsp;›&nbsp; {{ article.key }}{% endifequal %}</div>
+	<div id="Nav"><img src="/static/shared/home.png" align="absmiddle" class="ico16" />&nbsp;<a href="/writer/overview?page={{ page }}">Picky Backend</a> &nbsp;›&nbsp; {% ifequal page_mode 'new' %}New Article{% endifequal %}{% ifequal page_mode 'edit' %}Edit Article &nbsp;›&nbsp; {{ article.key }}{% endifequal %}</div>
 	{% if message %}
 	<div id="Message"><img src="/static/shared/minus.png" align="absmiddle" class="ico16" /> {{ message }}</div>
 	{% endif %}

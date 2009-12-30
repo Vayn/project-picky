@@ -57,7 +57,7 @@ class MainHandler(webapp.RequestHandler):
       articles = memcache.get('index')
       if articles is None:
         articles = db.GqlQuery("SELECT * FROM Article WHERE is_page = FALSE ORDER BY created DESC LIMIT 12")
-        memcache.add("index", articles, 3600)
+        memcache.add("index", articles, 86400)
       pages = db.GqlQuery("SELECT * FROM Article WHERE is_page = TRUE AND is_for_sidebar = TRUE ORDER BY title ASC")
       template_values['page_title'] = Datum.get('site_name')
       template_values['articles'] = articles
@@ -67,7 +67,7 @@ class MainHandler(webapp.RequestHandler):
       template_values['page_archive'] = False
       path = os.path.join(os.path.dirname(__file__), 'tpl', 'themes', site_theme, 'index.html')
       output = template.render(path, template_values)
-      memcache.set('index_output', output, 1800)
+      memcache.set('index_output', output, 86400)
     self.response.out.write(output)
 
 class ArchiveHandler(webapp.RequestHandler):
@@ -77,7 +77,7 @@ class ArchiveHandler(webapp.RequestHandler):
       articles = memcache.get('archive')
       if articles is None:
         articles = db.GqlQuery("SELECT * FROM Article WHERE is_page = FALSE ORDER BY created DESC")
-        memcache.add("archive", articles, 3600)
+        memcache.add("archive", articles, 86400)
       pages = db.GqlQuery("SELECT * FROM Article WHERE is_page = TRUE AND is_for_sidebar = TRUE ORDER BY title ASC")
       if site_name is not None:
         template_values['page_title'] = site_name + ' Archive'
@@ -90,7 +90,7 @@ class ArchiveHandler(webapp.RequestHandler):
       template_values['page_archive'] = True
       path = os.path.join(os.path.dirname(__file__), 'tpl', 'themes', site_theme, 'index.html')
       output = template.render(path, template_values)
-      memcache.add('archive_output', output, 1800)
+      memcache.add('archive_output', output, 86400)
     self.response.out.write(output)
   
 class ArticleHandler(webapp.RequestHandler):
@@ -136,19 +136,23 @@ class AtomFeedHandler(webapp.RequestHandler):
       template_values['site_updated'] = site_updated
       path = os.path.join(os.path.dirname(__file__), 'tpl', 'shared', 'index.xml')
       output = template.render(path, template_values)
-      memcache.set('feed_output', output, 3600)
+      memcache.set('feed_output', output, 86400)
     self.response.headers['Content-type'] = 'text/xml; charset=UTF-8'
     self.response.out.write(output)
 
 class AtomSitemapHandler(webapp.RequestHandler):
   def get(self):
-    articles = db.GqlQuery("SELECT * FROM Article ORDER BY last_modified DESC")
-    template_values['articles'] = articles
-    template_values['articles_total'] = articles.count()
-    template_values['site_updated'] = site_updated
-    path = os.path.join(os.path.dirname(__file__), 'tpl', 'shared', 'sitemap.xml')
+    output = memcache.get('sitemap_output')
+    if output is None:
+      articles = db.GqlQuery("SELECT * FROM Article ORDER BY last_modified DESC")
+      template_values['articles'] = articles
+      template_values['articles_total'] = articles.count()
+      template_values['site_updated'] = site_updated
+      path = os.path.join(os.path.dirname(__file__), 'tpl', 'shared', 'sitemap.xml')
+      output = template.render(path, template_values)
+      memcache.set('sitemap_output', output, 86400)
     self.response.headers['Content-type'] = 'text/xml; charset=UTF-8'
-    self.response.out.write(template.render(path, template_values))
+    self.response.out.write(output)
     
 class RobotsHandler(webapp.RequestHandler):
   def get(self):
