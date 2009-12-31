@@ -12,6 +12,7 @@ from v2ex.picky import Article
 from v2ex.picky import Datum
 
 from v2ex.picky import formats as CONTENT_FORMATS
+from v2ex import TWITTER_API_ROOT
 
 from v2ex.picky.misc import reminder
 from v2ex.picky.misc import message
@@ -42,7 +43,6 @@ user = users.get_current_user()
 # GLOBALS
 
 PAGE_SIZE = 10
-TWITTER_API_ROOT = 'http://saicn.com/tproxy/'
 
 class WriterOverviewHandler(webapp.RequestHandler):
   def get(self):
@@ -104,7 +104,7 @@ class WriterOverviewHandler(webapp.RequestHandler):
     if mentions_web is not None:
       template_values['mentions_web'] = mentions_web.entries
     mentions_twitter = memcache.get('mentions_twitter')
-    if mentions_twitter is None:
+    if mentions_twitter is None:    
       try:
         result = urlfetch.fetch(TWITTER_API_ROOT + 'search.json?q=' + urllib.quote(Datum.get('site_domain')))
         if result.status_code == 200:
@@ -302,7 +302,7 @@ class WriterSynchronizeHandler(webapp.RequestHandler):
           if twitter_account != '' and twitter_password != '':
             api = twitter.Api(username=twitter_account, password=twitter_password)
             try:
-              status = api.PostUpdate(article.title + ' http://' + site_domain + '/' + article.title_url)
+              status = api.PostUpdate(article.title + ' http://' + site_domain + '/' + article.title_url + ' (Sync via @projectpicky)')
             except:
               api = None
       obsolete = ['archive', 'archive_output', 'feed_output', 'index', 'index_output', 'writer_articles', 'writer_urls']
@@ -352,9 +352,9 @@ class WriterQuickFindHandler(webapp.RequestHandler):
   def post(self):
     qf = self.request.get('qf')
     if qf is not None:
-      q = Article.all().filter('title_url = ', qf)
+      q = db.GqlQuery('SELECT __key__ FROM Article WHERE title_url = :1', qf)
       if q.count() == 1:
-        self.redirect('/writer/edit/' + str(q[0].key()))
+        self.redirect('/writer/edit/' + str(q[0]))
       else:
         self.redirect(self.request.headers['REFERER'])
     else:
