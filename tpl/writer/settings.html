@@ -13,6 +13,9 @@
 	Primary Domain<br />
 	<input type="text" class="sls" name="site_domain" value="{% if site_domain %}{{ site_domain|escape }}{% endif %}" />
 	<br /><br />
+	Secondary Domain for Sync<br />
+	<input type="text" class="sls" name="site_domain_sync" value="{% if site_domain_sync %}{{ site_domain_sync|escape }}{% endif %}" />
+	<br /><br />
 	Site Name<br />
 	<input type="text" class="sls" name="site_name" value="{% if site_name %}{{ site_name|escape }}{% endif %}" />
 	<br /><br />

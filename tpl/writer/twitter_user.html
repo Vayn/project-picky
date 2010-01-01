@@ -3,9 +3,10 @@
 	<div class="w600">
 		<div class="tweet_box"><form action="/twitter/post" method="post"><textarea name="status" id="status" maxlength="140" class="tweet_status"></textarea><div align="right"><input type="submit" value="Update" class="btn" /></div></form></div>
 		<ul class="tabs">
-			<li class="selected">Home</li>
+			<li class="normal"><a href="/twitter">Home</a></li>
 			<li class="normal"><a href="/twitter/mentions">Mentions</a></li>
 			<li class="normal"><a href="/twitter/inbox">Direct Messages</a></li>
+			<li class="selected">{{ twitter_user.screen_name}}</li>
 		</ul>
 	{% for tweet in tweets %}<div class="tweet">
 		<span class="tweet_avatar roundAvatar roundAvatar_Medium"><a href="{{ tweet.user.screen_name}}"><img align="absmiddle" src="{{ tweet.user.profile_image_url }}" border="0" /><img class="roundAvatar_Corner" src="/static/shared/round.png" border="0" /></a></span><div class="tweet_text"><div class="tweet_time">{{ tweet.datetime|timesince }} ago</div><a href="/twitter/user/{{ tweet.user.screen_name }}" class="black"><strong>{{ tweet.user.screen_name }}</strong></a><br />{{ tweet.text|urlize }}</div>

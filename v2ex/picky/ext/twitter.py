@@ -963,6 +963,7 @@ class DirectMessage(object):
     direct_message.id
     direct_message.created_at
     direct_message.created_at_in_seconds # read only
+    direct_message.sender
     direct_message.sender_id
     direct_message.sender_screen_name
     direct_message.recipient_id
@@ -973,6 +974,7 @@ class DirectMessage(object):
   def __init__(self,
                id=None,
                created_at=None,
+               sender=None,
                sender_id=None,
                sender_screen_name=None,
                recipient_id=None,
@@ -996,6 +998,7 @@ class DirectMessage(object):
     '''
     self.id = id
     self.created_at = created_at
+    self.sender = sender
     self.sender_id = sender_id
     self.sender_screen_name = sender_screen_name
     self.recipient_id = recipient_id
@@ -1051,6 +1054,15 @@ class DirectMessage(object):
   created_at_in_seconds = property(GetCreatedAtInSeconds,
                                    doc="The time this direct message was "
                                        "posted, in seconds since the epoch")
+  
+  def GetSender(self):
+    return self._sender
+    
+  def SetSender(self, sender):
+    self._sender = sender
+    
+  sender = property(GetSender, SetSender,
+                    doc='A twitter.User')
 
   def GetSenderId(self):
     '''Get the unique sender id of this direct message.
@@ -1155,6 +1167,7 @@ class DirectMessage(object):
       return other and \
           self.id == other.id and \
           self.created_at == other.created_at and \
+          self.sender == other.sender and \
           self.sender_id == other.sender_id and \
           self.sender_screen_name == other.sender_screen_name and \
           self.recipient_id == other.recipient_id and \
@@ -1194,6 +1207,8 @@ class DirectMessage(object):
       data['id'] = self.id
     if self.created_at:
       data['created_at'] = self.created_at
+    if self.sender:
+      data['sender'] = self.sender.AsDict()
     if self.sender_id:
       data['sender_id'] = self.sender_id
     if self.sender_screen_name:
@@ -1215,8 +1230,13 @@ class DirectMessage(object):
     Returns:
       A twitter.DirectMessage instance
     '''
+    if 'sender' in data:
+      sender = User.NewFromJsonDict(data['sender'])
+    else:
+      sender = None
     return DirectMessage(created_at=data.get('created_at', None),
                          recipient_id=data.get('recipient_id', None),
+                         sender=sender,
                          sender_id=data.get('sender_id', None),
                          text=data.get('text', None),
                          sender_screen_name=data.get('sender_screen_name', None),

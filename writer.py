@@ -33,6 +33,7 @@ from django.core.paginator import ObjectPaginator, InvalidPage
 from django.utils import simplejson
 
 site_domain = Datum.get('site_domain')
+site_domain_sync = Datum.get('site_domain_sync')
 site_name = Datum.get('site_name')
 site_author = Datum.get('site_author')
 site_slogan = Datum.get('site_slogan')
@@ -121,6 +122,7 @@ class WriterOverviewHandler(webapp.RequestHandler):
 class WriterSettingsHandler(webapp.RequestHandler):
   def get(self):
     site_domain = Datum.get('site_domain')
+    site_domain_sync = Datum.get('site_domain_sync')
     site_name = Datum.get('site_name')
     site_author = Datum.get('site_author')
     site_slogan = Datum.get('site_slogan')
@@ -143,6 +145,7 @@ class WriterSettingsHandler(webapp.RequestHandler):
     site_theme = Datum.get('site_theme')
     template_values = {
       'site_domain' : site_domain,
+      'site_domain_sync' : site_domain_sync,
       'site_name' : site_name,
       'site_author' : site_author,
       'site_slogan' : site_slogan,
@@ -164,6 +167,7 @@ class WriterSettingsHandler(webapp.RequestHandler):
     
   def post(self):
     Datum.set('site_domain', self.request.get('site_domain'))
+    Datum.set('site_domain_sync', self.request.get('site_domain_sync'))
     Datum.set('site_name', self.request.get('site_name'))
     Datum.set('site_author', self.request.get('site_author'))
     Datum.set('site_slogan', self.request.get('site_slogan'))
@@ -302,7 +306,7 @@ class WriterSynchronizeHandler(webapp.RequestHandler):
           if twitter_account != '' and twitter_password != '':
             api = twitter.Api(username=twitter_account, password=twitter_password)
             try:
-              status = api.PostUpdate(article.title + ' http://' + site_domain + '/' + article.title_url + ' (Sync via @projectpicky)')
+              status = api.PostUpdate(article.title + ' http://' + site_domain_sync + '/' + article.title_url + ' (Sync via @projectpicky)')
             except:
               api = None
       obsolete = ['archive', 'archive_output', 'feed_output', 'index', 'index_output', 'writer_articles', 'writer_urls']
