@@ -18,15 +18,13 @@ body {
 }
 
 a:link, a:visited, a:active {
-	color: #69891b;
+	color: #1c7fdb;
 	text-decoration: none;
-	border-bottom: 1px dotted #ccc;
 }
 
 a:hover {
-	color: #4a630f;
-	text-decoration: none;
-	border-bottom: 1px dotted #c0caaa;
+	color: #1785eb;
+	text-decoration: underline;
 }
 
 form {
@@ -149,16 +147,6 @@ h1 {
 #Powered {
 	font-size: 10px;
 	color: #999;
-}
-
-#Footer a:link, #Footer a:visited, #Footer a:active {
-	color: #69891b;
-	text-decoration: none;
-}
-
-#Footer a:hover {
-	color: #4a630f;
-	text-decoration: underline;
 }
 
 /* CLASSes */
@@ -375,4 +363,69 @@ a.page:hover {
 	color: #000;
 	text-decoration: none;
 	border: none;
+}
+
+.roundAvatar { display:block;position: relative; overflow: hidden; }
+.roundAvatar_Corner { position: absolute; }
+.roundAvatar_Small,.roundAvatar_Small_even { height: 32px;width: 32px; margin: 3px 5px 0 0; }
+.roundAvatar_Small .roundAvatar_Corner { left:-123px; }
+.roundAvatar_Small_even .roundAvatar_Corner { left:-123px;top:-75px; }
+.roundAvatar_Medium_odd,.roundAvatar_Medium { height: 48px;width: 48px; margin-right: 10px; }
+.roundAvatar_Medium_odd .roundAvatar_Corner,.roundAvatar_Medium .roundAvatar_Corner { left:-75px; }
+.roundAvatar_Medium_even { height: 48px;width: 48px; margin: 0 10px 10px 0; }
+.roundAvatar_Medium_even .roundAvatar_Corner{ left:-75px; top:-75px; }
+.roundAvatar_Large { height: 75px;width: 75px; margin-right: 10px; }
+.roundAvatar_Large .roundAvatar_Corner{ left:0; top:0; }
+
+.tweet {
+	border-top: 1px solid #f0f0f0;
+	border-left: 1px solid #f0f0f0;
+	border-right: 1px solid #f0f0f0;
+	border-bottom: 1px solid #ccc;
+	padding: 5px;
+	background-image: url("/static/shared/tweet_bg.png");
+	background-position: bottom;
+	background-repeat: repeat-x;
+}
+
+.tweet_avatar {
+	float: left;
+}
+
+.tweet_text {
+	margin-left: 58px;
+	min-height: 48px;
+	font-size: 14px;
+	line-height: 20px;
+}
+
+.tweet_time {
+	float: right;
+	font-size: 10px;
+	color: #ddd;
+	font-weight: bold;
+}
+
+.tweet_box {
+	margin-bottom: 10px;
+	padding: 7px;
+	background-color: #f0f0ff;
+	-moz-border-radius: 10px;
+	-webkit-border-radius: 10px;
+	border-radius: 8px;
+	-moz-box-shadow: 0px 1px 10px #e0e0ef;
+}
+
+.tweet_status {
+	width: 583px;
+	height: 100px;
+	border: 1px solid #e0e0ef;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	border-radius: 5px;
+	margin-bottom: 10px;
+	padding: 5px;
+	font-size: 14px;
+	line-height: 18px;
+	font-family: "Panic Sans", "Courier New";
 }

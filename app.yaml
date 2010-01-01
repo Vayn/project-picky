@@ -15,8 +15,20 @@ handlers:
   script: $PYTHON_LIB/google/appengine/ext/remote_api/handler.py
   login: admin
 
+- url: /writer
+  script: writer.py
+  login: admin
+
 - url: /writer/.*
   script: writer.py
+  login: admin
+
+- url: /twitter
+  script: twitter.py
+  login: admin
+
+- url: /twitter/.*
+  script: twitter.py
   login: admin
 
 - url: .*

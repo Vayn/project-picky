@@ -1,1 +1,1 @@
-TWITTER_API_ROOT = 'http://saicn.com/tproxy/'
+TWITTER_API_ROOT = 'http://anti-rootkit.com/twip/'
