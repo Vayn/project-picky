@@ -3,8 +3,8 @@
 	<div class="w600">
 		<div class="tweet_box"><form action="/twitter/post" method="post"><textarea name="status" id="status" maxlength="140" class="tweet_status"></textarea><div align="right"><input type="submit" value="Update" class="btn" /></div></form></div>
 		<ul class="tabs">
-			<li class="normal"><a href="/twitter">Home</a></li>
-			<li class="normal"><a href="/twitter/mentions">Mentions</a></li>
+			<li class="normal"><a href="/twitter" class="black">Home</a></li>
+			<li class="normal"><a href="/twitter/mentions" class="black">Mentions</a></li>
 			<li class="selected">Direct Messages</li>
 		</ul>
 	{% for tweet in tweets %}<div class="tweet">
