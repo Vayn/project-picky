@@ -34,6 +34,7 @@ import time
 import urllib
 import urllib2
 import urlparse
+import re
 
 try:
   from google.appengine.api import memcache
@@ -2064,6 +2065,10 @@ class Api(object):
 
     # Always return the latest version
     return url_data
+    
+  def ConvertMentions(self, text):
+    p = re.compile('@([a-zA-Z0-9\_]+)')
+    return p.sub(r'@<a href="/twitter/user/\1">\1</a>', text)
 
 
 class _FileCacheError(Exception):

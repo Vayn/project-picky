@@ -58,6 +58,7 @@ class TwitterHomeHandler(webapp.RequestHandler):
         i = 0;
         for tweet in tweets:
           tweets[i].datetime = datetime.datetime.fromtimestamp(time.mktime(time.strptime(tweet.created_at, '%a %b %d %H:%M:%S +0000 %Y')))
+          tweets[i].text = api.ConvertMentions(tweet.text)
           i = i + 1
         memcache.set('twitter_home', tweets, 120)
       template_values['tweets'] = tweets
@@ -83,6 +84,7 @@ class TwitterHomeHandler(webapp.RequestHandler):
         i = 0;
         for tweet in tweets:
           tweets[i].datetime = datetime.datetime.fromtimestamp(time.mktime(time.strptime(tweet.created_at, '%a %b %d %H:%M:%S +0000 %Y')))
+          tweets[i].text = api.ConvertMentions(tweet.text)
           i = i + 1
         memcache.set('twitter_home', tweets, 120)
       template_values['tweets'] = tweets
@@ -108,6 +110,7 @@ class TwitterMentionsHandler(webapp.RequestHandler):
         i = 0;
         for tweet in tweets:
           tweets[i].datetime = datetime.datetime.fromtimestamp(time.mktime(time.strptime(tweet.created_at, '%a %b %d %H:%M:%S +0000 %Y')))
+          tweets[i].text = api.ConvertMentions(tweet.text)
           i = i + 1
         memcache.set('twitter_mentions', tweets, 120)
       template_values['tweets'] = tweets
@@ -134,6 +137,7 @@ class TwitterInboxHandler(webapp.RequestHandler):
         i = 0;
         for tweet in tweets:
           tweets[i].datetime = datetime.datetime.fromtimestamp(time.mktime(time.strptime(tweet.created_at, '%a %b %d %H:%M:%S +0000 %Y')))
+          tweets[i].text = api.ConvertMentions(tweet.text)
           i = i + 1
         memcache.set('twitter_inbox', tweets, 120)
       template_values['tweets'] = tweets
@@ -160,6 +164,7 @@ class TwitterUserHandler(webapp.RequestHandler):
         i = 0;
         for tweet in tweets:
           tweets[i].datetime = datetime.datetime.fromtimestamp(time.mktime(time.strptime(tweet.created_at, '%a %b %d %H:%M:%S +0000 %Y')))
+          tweets[i].text = api.ConvertMentions(tweet.text)
           i = i + 1
         memcache.set('twitter_user_' + user, tweets, 120)
       template_values['tweets'] = tweets
@@ -183,7 +188,8 @@ class TwitterPostHandler(webapp.RequestHandler):
         api = None
     memcache.delete('twitter_home')
     self.redirect('/twitter')
-    
+
+  
 def main():
   application = webapp.WSGIApplication([
   ('/twitter', TwitterHomeHandler),
