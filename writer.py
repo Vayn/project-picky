@@ -47,6 +47,10 @@ PAGE_SIZE = 10
 
 class WriterOverviewHandler(webapp.RequestHandler):
   def get(self):
+    if site_domain is None:
+      Datum.set('site_domain', os.environ['HTTP_HOST'])
+    if site_domain_sync is None:
+      Datum.set('site_domain_sync', os.environ['HTTP_HOST'])
     site_default_format = Datum.get('site_default_format')
     articles = memcache.get('writer_articles')
     if articles is None:
