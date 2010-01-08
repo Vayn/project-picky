@@ -418,6 +418,16 @@ a.page:hover {
 	font-weight: bold;
 }
 
+.tweet_time a:link, .tweet_time a:visited, .tweet_time a:active {
+	color: #cccce0;
+	text-decoration: none;
+}
+
+.tweet_time a:hover {
+	color: #999;
+	text-decoration: none;
+}
+
 .tweet_box {
 	margin-bottom: 10px;
 	padding: 7px;
