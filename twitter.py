@@ -152,10 +152,18 @@ class TwitterUserHandler(webapp.RequestHandler):
     template_values = {}
     twitter_account = Datum.get('twitter_account')
     twitter_password = Datum.get('twitter_password')
+    if twitter_account == user:
+      template_values['me'] = True
+    else:
+      template_values['me'] = False
+    api = twitter.Api(username=twitter_account, password=twitter_password)
+    friendships_ab = False
+    friendships_ba = False
+    friendships_ab = api.GetFriendshipsExists(twitter_account, user)
+    friendships_ba = api.GetFriendshipsExists(user, twitter_account)
     tweets = None
     tweets = memcache.get('twitter_user_' + user)
     if tweets is None:
-      api = twitter.Api(username=twitter_account, password=twitter_password)
       try:
         tweets = api.GetUserTimeline(user=user, count=100)
       except:
@@ -170,10 +178,26 @@ class TwitterUserHandler(webapp.RequestHandler):
       template_values['tweets'] = tweets
     else:
       template_values['tweets'] = tweets
+    template_values['friendships_ab'] = friendships_ab
+    template_values['friendships_ba'] = friendships_ba
     template_values['twitter_user'] = tweets[0].user
     path = os.path.join(os.path.dirname(__file__), 'tpl', 'writer', 'twitter_user.html')
     self.response.out.write(template.render(path, template_values))
 
+
+class TwitterFriendshipHandler(webapp.RequestHandler):
+  def get(self, method, user):
+    twitter_account = Datum.get('twitter_account')
+    if twitter_account == user:
+      self.redirect('/twitter/user/' + user)
+    else:
+      twitter_password = Datum.get('twitter_password')
+      api = twitter.Api(username=twitter_account, password=twitter_password)
+      if method == 'follow':
+        twitter_user = api.CreateFriendship(user)
+      if method == 'unfollow':
+        twitter_user = api.DestroyFriendship(user)
+      self.redirect('/twitter/user/' + user)
   
 class TwitterPostHandler(webapp.RequestHandler):
   def post(self):
@@ -197,6 +221,7 @@ def main():
   ('/twitter/mentions', TwitterMentionsHandler),
   ('/twitter/inbox', TwitterInboxHandler),
   ('/twitter/user/([a-zA-Z0-9\-\_]+)', TwitterUserHandler),
+  ('/twitter/(follow|unfollow)/([a-zA-Z0-9\-\_]+)', TwitterFriendshipHandler),
   ('/twitter/post', TwitterPostHandler)
   ],
                                        debug=True)

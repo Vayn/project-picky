@@ -1662,6 +1662,15 @@ class Api(object):
     data = simplejson.loads(json)
     self._CheckForTwitterError(data)
     return User.NewFromJsonDict(data)
+  
+  def GetFriendshipsExists(self, user_a, user_b):
+    url = TWITTER_API_ROOT + 'friendships/exists.json'
+    data = {'user_a' : user_a, 'user_b' : user_b}
+    json = self._FetchUrl(url, parameters=data)
+    if json == 'true':
+      return True
+    else:
+      return False
 
   def GetDirectMessages(self, since=None, since_id=None, page=None):
     '''Returns a list of the direct messages sent to the authenticating user.
