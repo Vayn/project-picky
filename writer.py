@@ -99,6 +99,10 @@ class WriterOverviewHandler(webapp.RequestHandler):
       template_values['site_analytics'] = site_analytics
     if user is not None:
       template_values['user_email'] = user.email()
+    if site_domain_sync is None:
+      q = site_domain
+    else:
+      q = site_domain + ' OR ' + site_domain_sync
     mentions_web = memcache.get('mentions_web')
     if mentions_web is None:
       try:
@@ -111,7 +115,7 @@ class WriterOverviewHandler(webapp.RequestHandler):
     mentions_twitter = memcache.get('mentions_twitter')
     if mentions_twitter is None:    
       try:
-        result = urlfetch.fetch(TWITTER_API_ROOT + 'search.json?q=' + urllib.quote(Datum.get('site_domain')))
+        result = urlfetch.fetch(TWITTER_API_ROOT + 'search.json?q=' + urllib.quote(q))
         if result.status_code == 200:
           mentions_twitter = simplejson.loads(result.content)
           memcache.add('mentions_twitter', mentions_twitter, 3600)
