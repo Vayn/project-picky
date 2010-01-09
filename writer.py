@@ -3,7 +3,6 @@
 
 import os
 import time
-import cgi
 import urllib
 import wsgiref.handlers
 import markdown
@@ -51,7 +50,6 @@ class WriterOverviewHandler(webapp.RequestHandler):
       Datum.set('site_domain', os.environ['HTTP_HOST'])
     if site_domain_sync is None:
       Datum.set('site_domain_sync', os.environ['HTTP_HOST'])
-    site_default_format = Datum.get('site_default_format')
     articles = memcache.get('writer_articles')
     if articles is None:
       articles = Article.all().order('-created')

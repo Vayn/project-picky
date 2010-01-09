@@ -4,34 +4,14 @@
 import os
 import time
 import datetime
-import cgi
-import urllib
 import wsgiref.handlers
-import markdown
 
-from v2ex.picky import Article
 from v2ex.picky import Datum
 
-from v2ex.picky import formats as CONTENT_FORMATS
-from v2ex import TWITTER_API_ROOT
-
-from v2ex.picky.misc import reminder
-from v2ex.picky.misc import message
-
-from v2ex.picky.ext import feedparser
-from v2ex.picky.ext import twitter
-from v2ex.picky.ext.sessions import Session
-
-from google.appengine.api.labs import taskqueue
 from google.appengine.ext import webapp
 from google.appengine.ext.webapp import template
-from google.appengine.api import urlfetch
 from google.appengine.api import memcache
-from google.appengine.ext import db
 from google.appengine.api import users
-
-from django.core.paginator import ObjectPaginator, InvalidPage
-from django.utils import simplejson
 
 site_domain = Datum.get('site_domain')
 site_name = Datum.get('site_name')

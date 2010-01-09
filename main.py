@@ -3,18 +3,14 @@
 
 import os
 import time
-import cgi
 import wsgiref.handlers
 
-from v2ex.picky import Article
 from v2ex.picky import Datum
 
 from google.appengine.ext import webapp
 from google.appengine.ext.webapp import template
-from google.appengine.api import urlfetch
 from google.appengine.api import memcache
 from google.appengine.ext import db
-from google.appengine.api import users
 
 site_domain = Datum.get('site_domain')
 site_name = Datum.get('site_name')
