@@ -1401,6 +1401,43 @@ class Api(object):
     self._CheckForTwitterError(data)
     return [Status.NewFromJsonDict(x) for x in data]
 
+  def GetListTimeline(self,
+                      user=None,
+                      list_id=None):
+    '''Fetch the sequence of twitter.Status messages for a user's friends
+
+    The twitter.Api instance must be authenticated if the user is private.
+
+    Args:
+      user:
+        Specifies the ID or screen name of the user for whom to return
+        the friends_timeline.  If unspecified, the username and password
+        must be set in the twitter.Api instance.  [Optional]
+      count: 
+        Specifies the number of statuses to retrieve. May not be
+        greater than 200. [Optional]
+      since:
+        Narrows the returned results to just those statuses created
+        after the specified HTTP-formatted date. [Optional]
+      since_id:
+        Returns only public statuses with an ID greater than (that is,
+        more recent than) the specified ID. [Optional]
+
+    Returns:
+      A sequence of twitter.Status instances, one for each message
+    '''
+    if user:
+      url = TWITTER_API_ROOT + '1/' + user + '/lists/' + list_id + '/statuses.json'
+    elif not user and not self._username:
+      raise TwitterError("User must be specified if API is not authenticated.")
+    else:
+      url = TWITTER_API_ROOT + '1/' + self._username + '/lists/' + list_id + '/statuses.json'
+    parameters = {}
+    json = self._FetchUrl(url, parameters=parameters)
+    data = simplejson.loads(json)
+    self._CheckForTwitterError(data)
+    return [Status.NewFromJsonDict(x) for x in data]
+
   def GetUserTimeline(self, user=None, count=None, since=None, since_id=None):
     '''Fetch the sequence of public twitter.Status messages for a single user.
 
@@ -1443,6 +1480,20 @@ class Api(object):
     data = simplejson.loads(json)
     self._CheckForTwitterError(data)
     return [Status.NewFromJsonDict(x) for x in data]
+
+  def GetLists(self):
+    url = TWITTER_API_ROOT + '1/' + self._username + '/lists.json'
+    json = self._FetchUrl(url)
+    data = simplejson.loads(json)
+    lists = []
+    i = 0
+    for alist in data['lists']:
+      lists.append({})
+      lists[i]['id'] = alist['id']
+      lists[i]['name'] = alist['name']
+      lists[i]['slug'] = alist['slug']
+      i = i + 1
+    return lists
 
   def GetStatus(self, id):
     '''Returns a single status message.

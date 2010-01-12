@@ -3,11 +3,15 @@
 	<div class="w600">
 		<div class="tweet_box"><form action="/twitter/post" method="post"><textarea name="status" id="status" maxlength="140" class="tweet_status"></textarea><div align="right"><input type="submit" value="Update" class="btn" /></div></form></div>
 		<ul class="tabs">
-			<li class="selected">Home</li>
+			<li class="normal"><a href="/twitter" class="black">Home</a></li>
 			<li class="normal"><a href="/twitter/mentions" class="black">Mentions</a></li>
 			<li class="normal"><a href="/twitter/inbox" class="black">Direct Messages</a></li>
 			{% for list in lists %}
+			{% ifequal list.id list_id %}
+			<li class="selected">{{ list.name }}</li>
+			{% else %}
 			<li class="normal"><a href="/twitter/list/{{ list.id }}" class="black">{{ list.name }}</a></li>
+			{% endifequal %}
 			{% endfor %}
 		</ul>
 	{% for tweet in tweets %}<div class="tweet">

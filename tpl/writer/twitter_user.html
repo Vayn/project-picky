@@ -6,6 +6,9 @@
 			<li class="normal"><a href="/twitter" class="black">Home</a></li>
 			<li class="normal"><a href="/twitter/mentions" class="black">Mentions</a></li>
 			<li class="normal"><a href="/twitter/inbox" class="black">Direct Messages</a></li>
+			{% for list in lists %}
+			<li class="normal"><a href="/twitter/list/{{ list.id }}" class="black">{{ list.name }}</a></li>
+			{% endfor %}
 			<li class="selected">{{ twitter_user.screen_name}}</li>
 		</ul>
 		{% if me %}
