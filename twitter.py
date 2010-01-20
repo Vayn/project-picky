@@ -28,6 +28,8 @@ class TwitterHomeHandler(webapp.RequestHandler):
     twitter_account = Datum.get('twitter_account')
     twitter_password = Datum.get('twitter_password')
     api = twitter.Api(username=twitter_account, password=twitter_password)
+    limit = api.GetRateLimit()
+    template_values['limit'] = limit
     lists = api.GetLists()
     template_values['lists'] = lists
     tweets = None
@@ -49,35 +51,41 @@ class TwitterHomeHandler(webapp.RequestHandler):
       template_values['tweets'] = tweets
     path = os.path.join(os.path.dirname(__file__), 'tpl', 'writer', 'twitter.html')
     self.response.out.write(template.render(path, template_values))
-
+  
 class TwitterListHandler(webapp.RequestHandler):
   def get(self, list_id):
     template_values = {}
     twitter_account = Datum.get('twitter_account')
     twitter_password = Datum.get('twitter_password')
     api = twitter.Api(username=twitter_account, password=twitter_password)
-    lists = api.GetLists()
-    template_values['lists'] = lists
-    template_values['list_id'] = int(list_id)
-    tweets = None
-    tweets = memcache.get('twitter_list_' + list_id)
-    if tweets is None:
-      try:
-        tweets = api.GetListTimeline(user=twitter_account, list_id=list_id)
-      except:
-        api = None
-      if tweets is not None:
-        i = 0;
-        for tweet in tweets:
-          tweets[i].datetime = datetime.datetime.fromtimestamp(time.mktime(time.strptime(tweet.created_at, '%a %b %d %H:%M:%S +0000 %Y')))
-          tweets[i].text = api.ConvertMentions(tweet.text)
-          i = i + 1
-        memcache.set('twitter_list_' + list_id, tweets, 120)
-      template_values['tweets'] = tweets
-    else:
-      template_values['tweets'] = tweets
-    path = os.path.join(os.path.dirname(__file__), 'tpl', 'writer', 'twitter_list.html')
-    self.response.out.write(template.render(path, template_values))
+    try:
+      limit = api.GetRateLimit()
+      template_values['limit'] = limit
+      lists = api.GetLists()
+      template_values['lists'] = lists
+      template_values['list_id'] = int(list_id)
+      tweets = None
+      tweets = memcache.get('twitter_list_' + list_id)
+      if tweets is None:
+        try:
+          tweets = api.GetListTimeline(user=twitter_account, list_id=list_id)
+        except:
+          api = None
+        if tweets is not None:
+          i = 0;
+          for tweet in tweets:
+            tweets[i].datetime = datetime.datetime.fromtimestamp(time.mktime(time.strptime(tweet.created_at, '%a %b %d %H:%M:%S +0000 %Y')))
+            tweets[i].text = api.ConvertMentions(tweet.text)
+            i = i + 1
+          memcache.set('twitter_list_' + list_id, tweets, 120)
+        template_values['tweets'] = tweets
+      else:
+        template_values['tweets'] = tweets
+      path = os.path.join(os.path.dirname(__file__), 'tpl', 'writer', 'twitter_list.html')
+      self.response.out.write(template.render(path, template_values))
+    except:
+      path = os.path.join(os.path.dirname(__file__), 'tpl', 'writer', 'twitter_fail.html')
+      self.response.out.write(template.render(path, template_values))
 
 class TwitterMentionsHandler(webapp.RequestHandler):
   def get(self):
@@ -85,28 +93,33 @@ class TwitterMentionsHandler(webapp.RequestHandler):
     twitter_account = Datum.get('twitter_account')
     twitter_password = Datum.get('twitter_password')
     api = twitter.Api(username=twitter_account, password=twitter_password)
-    lists = api.GetLists()
-    template_values['lists'] = lists
-    tweets = None
-    tweets = memcache.get('twitter_mentions')
-    if tweets is None:
-      try:
-        tweets = api.GetReplies()
-      except:
-        api = None
-      if tweets is not None:
-        i = 0;
-        for tweet in tweets:
-          tweets[i].datetime = datetime.datetime.fromtimestamp(time.mktime(time.strptime(tweet.created_at, '%a %b %d %H:%M:%S +0000 %Y')))
-          tweets[i].text = api.ConvertMentions(tweet.text)
-          i = i + 1
-        memcache.set('twitter_mentions', tweets, 120)
-      template_values['tweets'] = tweets
-    else:
-      template_values['tweets'] = tweets
-    path = os.path.join(os.path.dirname(__file__), 'tpl', 'writer', 'twitter_mentions.html')
-    self.response.out.write(template.render(path, template_values))
-
+    try:
+      limit = api.GetRateLimit()
+      template_values['limit'] = limit
+      lists = api.GetLists()
+      template_values['lists'] = lists
+      tweets = None
+      tweets = memcache.get('twitter_mentions')
+      if tweets is None:
+        try:
+          tweets = api.GetReplies()
+        except:
+          api = None
+        if tweets is not None:
+          i = 0;
+          for tweet in tweets:
+            tweets[i].datetime = datetime.datetime.fromtimestamp(time.mktime(time.strptime(tweet.created_at, '%a %b %d %H:%M:%S +0000 %Y')))
+            tweets[i].text = api.ConvertMentions(tweet.text)
+            i = i + 1
+          memcache.set('twitter_mentions', tweets, 120)
+        template_values['tweets'] = tweets
+      else:
+        template_values['tweets'] = tweets
+      path = os.path.join(os.path.dirname(__file__), 'tpl', 'writer', 'twitter_mentions.html')
+      self.response.out.write(template.render(path, template_values))
+    except:
+      path = os.path.join(os.path.dirname(__file__), 'tpl', 'writer', 'twitter_fail.html')
+      self.response.out.write(template.render(path, template_values))
 
 class TwitterInboxHandler(webapp.RequestHandler):
   def get(self):
@@ -114,28 +127,33 @@ class TwitterInboxHandler(webapp.RequestHandler):
     twitter_account = Datum.get('twitter_account')
     twitter_password = Datum.get('twitter_password')
     api = twitter.Api(username=twitter_account, password=twitter_password)
-    lists = api.GetLists()
-    template_values['lists'] = lists
-    tweets = None
-    tweets = memcache.get('twitter_inbox')
-    if tweets is None:
-      try:
-        tweets = api.GetDirectMessages()
-      except:
-        api = None
-      if tweets is not None:
-        i = 0;
-        for tweet in tweets:
-          tweets[i].datetime = datetime.datetime.fromtimestamp(time.mktime(time.strptime(tweet.created_at, '%a %b %d %H:%M:%S +0000 %Y')))
-          tweets[i].text = api.ConvertMentions(tweet.text)
-          i = i + 1
-        memcache.set('twitter_inbox', tweets, 120)
-      template_values['tweets'] = tweets
-    else:
-      template_values['tweets'] = tweets
-    path = os.path.join(os.path.dirname(__file__), 'tpl', 'writer', 'twitter_inbox.html')
-    self.response.out.write(template.render(path, template_values))
-
+    try:
+      limit = api.GetRateLimit()
+      template_values['limit'] = limit
+      lists = api.GetLists()
+      template_values['lists'] = lists
+      tweets = None
+      tweets = memcache.get('twitter_inbox')
+      if tweets is None:
+        try:
+          tweets = api.GetDirectMessages()
+        except:
+          api = None
+        if tweets is not None:
+          i = 0;
+          for tweet in tweets:
+            tweets[i].datetime = datetime.datetime.fromtimestamp(time.mktime(time.strptime(tweet.created_at, '%a %b %d %H:%M:%S +0000 %Y')))
+            tweets[i].text = api.ConvertMentions(tweet.text)
+            i = i + 1
+          memcache.set('twitter_inbox', tweets, 120)
+        template_values['tweets'] = tweets
+      else:
+        template_values['tweets'] = tweets
+      path = os.path.join(os.path.dirname(__file__), 'tpl', 'writer', 'twitter_inbox.html')
+      self.response.out.write(template.render(path, template_values))
+    except:
+      path = os.path.join(os.path.dirname(__file__), 'tpl', 'writer', 'twitter_fail.html')
+      self.response.out.write(template.render(path, template_values))
 
 class TwitterUserHandler(webapp.RequestHandler):
   def get(self, user):
@@ -143,39 +161,44 @@ class TwitterUserHandler(webapp.RequestHandler):
     twitter_account = Datum.get('twitter_account')
     twitter_password = Datum.get('twitter_password')
     api = twitter.Api(username=twitter_account, password=twitter_password)
-    lists = api.GetLists()
-    template_values['lists'] = lists
-    if twitter_account == user:
-      template_values['me'] = True
-    else:
-      template_values['me'] = False
-    friendships_ab = False
-    friendships_ba = False
-    friendships_ab = api.GetFriendshipsExists(twitter_account, user)
-    friendships_ba = api.GetFriendshipsExists(user, twitter_account)
-    tweets = None
-    tweets = memcache.get('twitter_user_' + user)
-    if tweets is None:
-      try:
-        tweets = api.GetUserTimeline(user=user, count=100)
-      except:
-        api = None
-      if tweets is not None:
-        i = 0;
-        for tweet in tweets:
-          tweets[i].datetime = datetime.datetime.fromtimestamp(time.mktime(time.strptime(tweet.created_at, '%a %b %d %H:%M:%S +0000 %Y')))
-          tweets[i].text = api.ConvertMentions(tweet.text)
-          i = i + 1
-        memcache.set('twitter_user_' + user, tweets, 120)
-      template_values['tweets'] = tweets
-    else:
-      template_values['tweets'] = tweets
-    template_values['friendships_ab'] = friendships_ab
-    template_values['friendships_ba'] = friendships_ba
-    template_values['twitter_user'] = tweets[0].user
-    path = os.path.join(os.path.dirname(__file__), 'tpl', 'writer', 'twitter_user.html')
-    self.response.out.write(template.render(path, template_values))
-
+    try:
+      limit = api.GetRateLimit()
+      template_values['limit'] = limit
+      lists = api.GetLists()
+      template_values['lists'] = lists
+      if twitter_account == user:
+        template_values['me'] = True
+      else:
+        template_values['me'] = False
+      friendships_ab = False
+      friendships_ba = False
+      friendships_ab = api.GetFriendshipsExists(twitter_account, user)
+      friendships_ba = api.GetFriendshipsExists(user, twitter_account)
+      tweets = None
+      tweets = memcache.get('twitter_user_' + user)
+      if tweets is None:
+        try:
+          tweets = api.GetUserTimeline(user=user, count=100)
+        except:
+          api = None
+        if tweets is not None:
+          i = 0;
+          for tweet in tweets:
+            tweets[i].datetime = datetime.datetime.fromtimestamp(time.mktime(time.strptime(tweet.created_at, '%a %b %d %H:%M:%S +0000 %Y')))
+            tweets[i].text = api.ConvertMentions(tweet.text)
+            i = i + 1
+          memcache.set('twitter_user_' + user, tweets, 120)
+        template_values['tweets'] = tweets
+      else:
+        template_values['tweets'] = tweets
+      template_values['friendships_ab'] = friendships_ab
+      template_values['friendships_ba'] = friendships_ba
+      template_values['twitter_user'] = tweets[0].user
+      path = os.path.join(os.path.dirname(__file__), 'tpl', 'writer', 'twitter_user.html')
+      self.response.out.write(template.render(path, template_values))
+    except:
+      path = os.path.join(os.path.dirname(__file__), 'tpl', 'writer', 'twitter_fail.html')
+      self.response.out.write(template.render(path, template_values))
 
 class TwitterFriendshipHandler(webapp.RequestHandler):
   def get(self, method, user):

@@ -1401,6 +1401,12 @@ class Api(object):
     self._CheckForTwitterError(data)
     return [Status.NewFromJsonDict(x) for x in data]
 
+  def GetRateLimit(self):
+    url = TWITTER_API_ROOT + 'account/rate_limit_status.json'
+    json = self._FetchUrl(url)
+    data = simplejson.loads(json)
+    return data['remaining_hits']
+    
   def GetListTimeline(self,
                       user=None,
                       list_id=None):

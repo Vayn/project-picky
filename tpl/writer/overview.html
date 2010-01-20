@@ -24,7 +24,7 @@
 		{% endif %}
 	</div>
 	<div id="Nav"><img src="/static/shared/home.png" align="absmiddle" class="ico16" />&nbsp;Picky Backend</div>
-	{% if site_configured%}
+	{% if site_configured %}
 	{% else %}
 	<small class="fade">Your site is not fully configured, please visit <img src="/static/shared/settings.png" align="absmiddle" />&nbsp;<a href="/writer/settings">Settings</a> now.</small>
 	<div class="sep10"></div>
@@ -35,8 +35,7 @@
 	{% for url in urls %}urls[{{ forloop.counter0 }}] = '{{ url }}';{% endfor %}
 	$("#qf").autocompleteArray(urls, { autoFill:true });
 	</script>
-	</div><input type="button" class="btn" value="Write a New Article" onclick="location.href='/writer/new';" />
-	</div>
+	</div><a class="super normal button" id="writeNew" href="/writer/new">Write a New Article</a></div>
 	<table cellpadding="0" cellspacing="0" border="0" width="100%" class="data">
 		<tr>
 			<th width="20"></td>
@@ -64,10 +63,10 @@
 	<div id="Pages">
 		<div id="Numbers">{% for p in page_range %}{% ifequal p page %}{{ p|add:"1" }}&nbsp;{% else %}<a href="/writer/overview?page={{ p }}" class="page">{{ p|add:"1" }}</a>&nbsp;{% endifequal %}{% endfor %}</div>
 	{% if page_has_next %}
-	<input type="button" class="btn" value="Next" onclick="location.href='/writer/overview?page={{ next }}';" />
+	<a class="super normal button" id="doNext" href="/writer/overview?page={{ next }}">Next</a>
 	{% endif %}
 	{% if page_has_previous %}
-	<input type="button" class="btn" value="Previous" onclick="location.href='/writer/overview?page={{ previous }}';" />
+	<a class="super normal button" id="doPrevious" href="/writer/overview?page={{ previous }}">Previous</a>
 	{% endif %}
 	</div>
 	{% endif %}

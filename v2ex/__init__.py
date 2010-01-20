@@ -1,1 +1,1 @@
-TWITTER_API_ROOT = 'http://li2z.cn/t/'
+TWITTER_API_ROOT = 'http://twitter.com/'

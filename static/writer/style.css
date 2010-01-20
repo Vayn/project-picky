@@ -69,23 +69,24 @@ h1 {
 	float: right;
 	font-size: 12px;
 	line-height: 16px;
-	padding: 5px;
-	border: 2px solid #e2e2e2;
-	background-color: #f5f5f5;
-	-moz-border-radius: 5px;
-	-webkit-border-radius: 5px;
-	border-radius: 5px;
 	width: 200px;
 	margin-bottom: 15px;
 }
 
 #Mentions ul {
-	padding-left: 15px;
-	margin-left: 0px;
+	list-style: none;
+	margin-left: 0;
+	padding-left: 1em;
+	text-indent: -1em;
 }
 
 #Mentions ul li {
-	list-style: square;
+	color: #333;
+}
+
+#Mentions ul li:before {
+	content: "\00BB \0020";
+	color: #000;
 }
 
 #Message {
@@ -106,8 +107,10 @@ h1 {
 }
 
 #Operations {
-	padding-bottom: 20px;
 	width: 700px;
+	height: 30px;
+	margin-top: 10px;
+	margin-bottom: 15px;
 }
 
 #Quickfind {
@@ -115,11 +118,10 @@ h1 {
 	font-size: 12px;
 	font-weight: bold;
 	color: #ccc;
-	padding-top: 10px;
 }
 
 #Pages {
-	padding-top: 20px;
+	padding-top: 10px;
 	width: 700px;
 }
 
@@ -201,10 +203,6 @@ h1 {
 	font-family: "Panic Sans", Luxi Mono, "Courier New", Monaco;
 }
 
-.sl:focus {
-	border: 1px solid #999;
-}
-
 .sls {
 	padding: 3px;
 	-moz-border-radius: 5px;
@@ -216,10 +214,6 @@ h1 {
 	background-color: #fff;
 	border: 1px solid #ccc;
 	font-family: "Panic Sans", Luxi Mono, "Courier New", Monaco;
-}
-
-.sls:focus {
-	border: 1px solid #999;
 }
 
 .ml {
@@ -234,10 +228,6 @@ h1 {
 	background-color: #fff;
 	border: 1px solid #ccc;
 	font-family: "Panic Sans", Luxi Mono, "Courier New", Monaco;
-}
-
-.ml:focus {
-	border: 1px solid #999;
 }
 
 .btn {
@@ -361,6 +351,10 @@ a.white:hover {
 	width: 610px;
 }
 
+.w700 {
+	width: 710px;
+}
+
 .c {
 	clear: both;
 }
@@ -460,25 +454,45 @@ a.page:hover {
 }
 
 .tweet_status {
-	width: 597px;
+	width: 701px;
 	height: 100px;
 	border: 1px solid #e0e0ef;
-	-moz-border-radius: 5px;
-	-webkit-border-radius: 5px;
-	border-radius: 5px;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
+	border-radius: 3px;
 	margin-bottom: 7px;
-	padding: 5px;
+	padding: 3px;
 	font-size: 14px;
 	line-height: 18px;
 	font-family: "Panic Sans", "Courier New";
 }
+
+.tweet_status:focus, .sl:focus, .sls:focus, .ml:focus {
+	border-color: #6c0;
+}
+
+/* Super Awesome Buttons */
+
+.super.button {
+	background-image: url("/static/writer/bg_blended.png");
+	padding: 4px 15px 4px 15px;
+	border: 1px solid rgba(0,0,0,.25);
+	border-bottom-color: rgba(0,0,0,.35);
+	-webkit-border-radius: 15px;
+	-moz-border-radius: 15px;
+	font-size: 12px;
+	line-height: 12px;
+}
+
+.normal.button { background-color: #fff; color: #333; text-shadow: 0px 1px 1px #fff; text-decoration: none; font-weight: bold; }
+.normal.button:hover { background-color: #f0f0f0; color: #333; text-shadow: 0px 1px 1px #fff; text-decoration: none; text-decoration: none; font-weight: bold; }
 
 ul.tabs {
 	padding: 0px;
 	margin: 0px;
 	height: 25px;
 	line-height: 18px;
-	width: 610px;
+	width: 710px;
 	font-size: 12px;
 	border-bottom: 1px solid #e0e0ef;
 	margin-bottom: 10px;

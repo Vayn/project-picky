@@ -5,7 +5,7 @@
 	{% if message %}
 	<div id="Message"><img src="/static/shared/minus.png" align="absmiddle" class="ico16" /> {{ message }}</div>
 	{% endif %}
-	<form method="post" action="/writer/settings">
+	<form method="post" action="/writer/settings" name="formSettings">
 	<h1>General</h1>
 	<div class="sep10"></div>
 	<small class="fade">These options affect user experience and SEO.</small>
@@ -81,7 +81,7 @@
 	Alternative Feed<br />
 	<input type="text" class="sl" name="feed_url" value="{% if feed_url %}{{ feed_url|escape }}{% endif %}" />
 	<div class="sep"></div>
-	<input type="submit" class="btn" value="Save" />
+	<a class="super normal button" id="doSubmit" href="javascript:document.formSettings.submit()">Save</a>
 	</form>
 	</div>
 </div>

@@ -1,7 +1,7 @@
 {% include 'header.html' %}
 <div id="Main">
-	<div class="w600">
-		<div class="tweet_box"><form action="/twitter/post" method="post"><textarea name="status" id="status" maxlength="140" class="tweet_status"></textarea><div align="right"><input type="submit" value="Update" class="btn" /></div></form></div>
+	<div class="w700">
+		<div class="tweet_box"><form action="/twitter/post" method="post" name="formTweet"><textarea name="status" id="status" maxlength="140" class="tweet_status">@{{ twitter_user.screen_name}} </textarea><div align="right"><a class="super normal button" id="doSubmit" href="javascript:document.formTweet.submit()">Update</a></div></form></div>
 		<ul class="tabs">
 			<li class="normal"><a href="/twitter" class="black">Home</a></li>
 			<li class="normal"><a href="/twitter/mentions" class="black">Mentions</a></li>
@@ -22,6 +22,7 @@
 	{% endfor %}
 	</div>
 	<div class="c"></div>
+	<script type="text/javascript">window.onload = function() { document.getElementById("status").focus(); }</script>
 </div>
 {% include 'footer.html' %}
 </body>
