@@ -18,7 +18,7 @@ html {
 body {
 	padding: 0px;
 	margin: 0px;
-	font-family: "Helvetica Neue", "Luxi Sans", "DejaVu Sans", Tahoma, "STHeiti";
+	font-family: "Myriad Pro", "Helvetica Neue", "Luxi Sans", "DejaVu Sans", Tahoma, "STHeiti";
 	background-color: #e2e2e2;
 	min-width: 900px;
 }
@@ -143,8 +143,8 @@ code {
 }
 
 #Main .content {
-	font-size: 13px;
-	line-height: 20px;
+	font-size: 14px;
+	line-height: 22px;
 	color: #333;
 	text-align: left;
 	padding-left: 15px;

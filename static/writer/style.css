@@ -121,15 +121,15 @@ h1 {
 }
 
 #Pages {
-	padding-top: 10px;
+	padding-top: 20px;
 	width: 700px;
 }
 
 #Pages #Numbers {
-	padding-top: 5px;
+	padding-top: 0px;
 	float: right;
-	font-size: 22px;
-	line-height: 22px;
+	font-size: 20px;
+	line-height: 20px;
 	font-family: "Arial Black";
 	color: #000;
 }
