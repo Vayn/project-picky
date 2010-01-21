@@ -36,7 +36,7 @@ class TwitterHomeHandler(webapp.RequestHandler):
     tweets = memcache.get('twitter_home')
     if tweets is None:
       try:
-        tweets = api.GetFriendsTimeline(count=100)
+        tweets = api.GetHomeTimeline(count=100)
       except:
         api = None
       if tweets is not None:
@@ -44,6 +44,7 @@ class TwitterHomeHandler(webapp.RequestHandler):
         for tweet in tweets:
           tweets[i].datetime = datetime.datetime.fromtimestamp(time.mktime(time.strptime(tweet.created_at, '%a %b %d %H:%M:%S +0000 %Y')))
           tweets[i].text = api.ConvertMentions(tweet.text)
+          tweets[i].text = api.ExpandBitly(tweet.text)
           i = i + 1
         memcache.set('twitter_home', tweets, 120)
       template_values['tweets'] = tweets
@@ -76,6 +77,7 @@ class TwitterListHandler(webapp.RequestHandler):
           for tweet in tweets:
             tweets[i].datetime = datetime.datetime.fromtimestamp(time.mktime(time.strptime(tweet.created_at, '%a %b %d %H:%M:%S +0000 %Y')))
             tweets[i].text = api.ConvertMentions(tweet.text)
+            tweets[i].text = api.ExpandBitly(tweet.text)
             i = i + 1
           memcache.set('twitter_list_' + list_id, tweets, 120)
         template_values['tweets'] = tweets
@@ -110,6 +112,7 @@ class TwitterMentionsHandler(webapp.RequestHandler):
           for tweet in tweets:
             tweets[i].datetime = datetime.datetime.fromtimestamp(time.mktime(time.strptime(tweet.created_at, '%a %b %d %H:%M:%S +0000 %Y')))
             tweets[i].text = api.ConvertMentions(tweet.text)
+            tweets[i].text = api.ExpandBitly(tweet.text)
             i = i + 1
           memcache.set('twitter_mentions', tweets, 120)
         template_values['tweets'] = tweets
@@ -144,6 +147,7 @@ class TwitterInboxHandler(webapp.RequestHandler):
           for tweet in tweets:
             tweets[i].datetime = datetime.datetime.fromtimestamp(time.mktime(time.strptime(tweet.created_at, '%a %b %d %H:%M:%S +0000 %Y')))
             tweets[i].text = api.ConvertMentions(tweet.text)
+            tweets[i].text = api.ExpandBitly(tweet.text)
             i = i + 1
           memcache.set('twitter_inbox', tweets, 120)
         template_values['tweets'] = tweets
@@ -186,6 +190,7 @@ class TwitterUserHandler(webapp.RequestHandler):
           for tweet in tweets:
             tweets[i].datetime = datetime.datetime.fromtimestamp(time.mktime(time.strptime(tweet.created_at, '%a %b %d %H:%M:%S +0000 %Y')))
             tweets[i].text = api.ConvertMentions(tweet.text)
+            tweets[i].text = api.ExpandBitly(tweet.text)
             i = i + 1
           memcache.set('twitter_user_' + user, tweets, 120)
         template_values['tweets'] = tweets

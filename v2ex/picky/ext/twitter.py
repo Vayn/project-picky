@@ -35,6 +35,8 @@ import urllib
 import urllib2
 import urlparse
 import re
+import bitly
+import hashlib
 
 try:
   from google.appengine.api import memcache
@@ -1401,6 +1403,56 @@ class Api(object):
     self._CheckForTwitterError(data)
     return [Status.NewFromJsonDict(x) for x in data]
 
+  def GetHomeTimeline(self,
+                         user=None,
+                         count=None,
+                         since=None, 
+                         since_id=None):
+    '''Fetch the sequence of twitter.Status messages for a user's friends
+
+    The twitter.Api instance must be authenticated if the user is private.
+
+    Args:
+      user:
+        Specifies the ID or screen name of the user for whom to return
+        the friends_timeline.  If unspecified, the username and password
+        must be set in the twitter.Api instance.  [Optional]
+      count: 
+        Specifies the number of statuses to retrieve. May not be
+        greater than 200. [Optional]
+      since:
+        Narrows the returned results to just those statuses created
+        after the specified HTTP-formatted date. [Optional]
+      since_id:
+        Returns only public statuses with an ID greater than (that is,
+        more recent than) the specified ID. [Optional]
+
+    Returns:
+      A sequence of twitter.Status instances, one for each message
+    '''
+    if user:
+      url = TWITTER_API_ROOT + 'statuses/home_timeline/%s.json' % user
+    elif not user and not self._username:
+      raise TwitterError("User must be specified if API is not authenticated.")
+    else:
+      url = TWITTER_API_ROOT + 'statuses/friends_timeline.json'
+    parameters = {}
+    if count is not None:
+      try:
+        if int(count) > 200:
+          raise TwitterError("'count' may not be greater than 200")
+      except ValueError:
+        raise TwitterError("'count' must be an integer")
+      parameters['count'] = count
+    if since:
+      parameters['since'] = since
+    if since_id:
+      parameters['since_id'] = since_id
+    json = self._FetchUrl(url, parameters=parameters)
+    data = simplejson.loads(json)
+    self._CheckForTwitterError(data)
+    return [Status.NewFromJsonDict(x) for x in data]
+
   def GetRateLimit(self):
     url = TWITTER_API_ROOT + 'account/rate_limit_status.json'
     json = self._FetchUrl(url)
@@ -2135,7 +2187,23 @@ class Api(object):
   def ConvertMentions(self, text):
     p = re.compile('@([a-zA-Z0-9\_]+)')
     return p.sub(r'@<a href="/twitter/user/\1">\1</a>', text)
-
+    
+  def ExpandBitly(self, text):
+    p = re.compile('http:\/\/bit\.ly/[a-zA-Z0-9]+')
+    m = p.findall(text)
+    if len(m) > 0:
+      api = bitly.Api(login='livid', apikey='R_40ab00809faf431d53cfdacc8d8b8d7f')
+      last = None
+      for s in m:
+        if s != last:
+          cache_tag = 'bitly_' + hashlib.md5(s).hexdigest()
+          expanded = memcache.get(cache_tag)
+          if expanded is None:
+            expanded = api.expand(s)
+            memcache.set(cache_tag, expanded, 2678400)
+          last = s
+          text = text.replace(s, expanded)
+    return text
 
 class _FileCacheError(Exception):
   '''Base exception class for FileCache related errors'''
