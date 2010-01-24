@@ -1307,7 +1307,7 @@ class Api(object):
       >>> api.GetUserByEmail(email)
   '''
 
-  DEFAULT_CACHE_TIMEOUT = 60 # cache for 1 minute
+  DEFAULT_CACHE_TIMEOUT = 10 # default cache for 1 minute
 
   _API_REALM = 'Twitter API'
 
