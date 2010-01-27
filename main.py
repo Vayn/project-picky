@@ -182,6 +182,12 @@ class ArticleHandler(webapp.RequestHandler):
       template_values['page_title'] = 'Project Picky › Article Not Found'
       template_values['pages'] = pages
       template_values['pages_total'] = pages.count()
+      site_theme = Datum.get('site_theme')
+      if site_theme is None:
+        site_theme = 'default'
+      themes = os.listdir(os.path.join(os.path.dirname(__file__), 'tpl', 'themes'))
+      if site_theme not in themes:
+        site_theme = 'default'
       path = os.path.join(os.path.dirname(__file__), 'tpl', 'themes', site_theme, '404.html')
       self.response.out.write(template.render(path, template_values))
 

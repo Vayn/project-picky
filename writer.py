@@ -9,6 +9,7 @@ import markdown
 import hashlib
 
 from auth import SECRET
+from version import *
 
 from v2ex.picky import Article
 from v2ex.picky import Datum
@@ -67,6 +68,7 @@ class WriterAuthHandler(webapp.RequestHandler):
     destination = None
     destination = self.request.get('destination')
     template_values['destination'] = destination
+    template_values['system_version'] = VERSION
     path = os.path.join(os.path.dirname(__file__), 'tpl', 'writer', 'auth.html')
     self.response.out.write(template.render(path, template_values))
     
@@ -118,6 +120,7 @@ class WriterSignoutHandler(webapp.RequestHandler):
     template_values = {}
     template_values['site_name'] = site_name
     template_values['site_domain'] = site_domain
+    template_values['system_version'] = VERSION
     path = os.path.join(os.path.dirname(__file__), 'tpl', 'writer', 'signout.html')
     self.response.out.write(template.render(path, template_values))
 
