@@ -210,6 +210,7 @@ class WriterOverviewHandler(webapp.RequestHandler):
     if mentions_twitter is not None:
       if len(mentions_twitter['results']) > 0:
         template_values['mentions_twitter'] = mentions_twitter['results']
+    template_values['system_version'] = VERSION
     path = os.path.join(os.path.dirname(__file__), 'tpl', 'writer', 'overview.html')
     self.response.out.write(template.render(path, template_values))
 
@@ -257,6 +258,7 @@ class WriterSettingsHandler(webapp.RequestHandler):
     }
     if site_analytics is not None:
       template_values['site_analytics'] = site_analytics
+    template_values['system_version'] = VERSION
     path = os.path.join(os.path.dirname(__file__), 'tpl', 'writer', 'settings.html')
     self.response.out.write(template.render(path, template_values))
     
@@ -333,6 +335,7 @@ class WriterWriteHandler(webapp.RequestHandler):
       }
     if site_analytics is not None:
       template_values['site_analytics'] = site_analytics
+    template_values['system_version'] = VERSION
     path = os.path.join(os.path.dirname(__file__), 'tpl', 'writer', 'write.html')
     self.response.out.write(template.render(path, template_values))
 
@@ -459,6 +462,7 @@ class WriterSynchronizeHandler(webapp.RequestHandler):
       }
       if site_analytics is not None:
         template_values['site_analytics'] = site_analytics
+      template_values['system_version'] = VERSION
       path = os.path.join(os.path.dirname(__file__), 'tpl', 'writer', 'write.html')
       self.response.out.write(template.render(path, template_values))
       

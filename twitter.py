@@ -9,6 +9,8 @@ import wsgiref.handlers
 from v2ex.picky.ext import twitter
 from v2ex.picky import Datum
 
+from version import *
+
 from v2ex.picky.security import CheckAuth, DoAuth
 
 from v2ex.picky.ext.sessions import Session
@@ -57,6 +59,7 @@ class TwitterHomeHandler(webapp.RequestHandler):
       template_values['tweets'] = tweets
     else:
       template_values['tweets'] = tweets
+    template_values['system_version'] = VERSION
     path = os.path.join(os.path.dirname(__file__), 'tpl', 'writer', 'twitter.html')
     self.response.out.write(template.render(path, template_values))
   
@@ -93,9 +96,11 @@ class TwitterListHandler(webapp.RequestHandler):
         template_values['tweets'] = tweets
       else:
         template_values['tweets'] = tweets
+      template_values['system_version'] = VERSION
       path = os.path.join(os.path.dirname(__file__), 'tpl', 'writer', 'twitter_list.html')
       self.response.out.write(template.render(path, template_values))
     except:
+      template_values['system_version'] = VERSION
       path = os.path.join(os.path.dirname(__file__), 'tpl', 'writer', 'twitter_fail.html')
       self.response.out.write(template.render(path, template_values))
 
@@ -131,9 +136,11 @@ class TwitterMentionsHandler(webapp.RequestHandler):
         template_values['tweets'] = tweets
       else:
         template_values['tweets'] = tweets
+      template_values['system_version'] = VERSION
       path = os.path.join(os.path.dirname(__file__), 'tpl', 'writer', 'twitter_mentions.html')
       self.response.out.write(template.render(path, template_values))
     except:
+      template_values['system_version'] = VERSION
       path = os.path.join(os.path.dirname(__file__), 'tpl', 'writer', 'twitter_fail.html')
       self.response.out.write(template.render(path, template_values))
 
@@ -169,9 +176,11 @@ class TwitterInboxHandler(webapp.RequestHandler):
         template_values['tweets'] = tweets
       else:
         template_values['tweets'] = tweets
+      template_values['system_version'] = VERSION
       path = os.path.join(os.path.dirname(__file__), 'tpl', 'writer', 'twitter_inbox.html')
       self.response.out.write(template.render(path, template_values))
     except:
+      template_values['system_version'] = VERSION
       path = os.path.join(os.path.dirname(__file__), 'tpl', 'writer', 'twitter_fail.html')
       self.response.out.write(template.render(path, template_values))
 
@@ -218,9 +227,11 @@ class TwitterUserHandler(webapp.RequestHandler):
       template_values['friendships_ab'] = friendships_ab
       template_values['friendships_ba'] = friendships_ba
       template_values['twitter_user'] = tweets[0].user
+      template_values['system_version'] = VERSION
       path = os.path.join(os.path.dirname(__file__), 'tpl', 'writer', 'twitter_user.html')
       self.response.out.write(template.render(path, template_values))
     except:
+      template_values['system_version'] = VERSION
       path = os.path.join(os.path.dirname(__file__), 'tpl', 'writer', 'twitter_fail.html')
       self.response.out.write(template.render(path, template_values))
 
