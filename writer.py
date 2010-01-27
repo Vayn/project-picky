@@ -483,8 +483,8 @@ class WriterQuickFindHandler(webapp.RequestHandler):
 
 class WriterPingHandler(webapp.RequestHandler):
   def get(self):
-    Datum.set('site_domain', self.request.get('site_domain'))
-    Datum.set('site_name', self.request.get('site_name'))
+    site_domain = Datum.get('site_domain')
+    site_name = Datum.get('site_name')
     try:
       google_ping = 'http://blogsearch.google.com/ping?name=' + urllib.quote(Datum.get('site_name')) + '&url=http://' + urllib.quote(Datum.get('site_domain')) + '/&changesURL=http://' + urllib.quote(Datum.get('site_domain')) + '/index.xml'
       result = urlfetch.fetch(google_ping)
