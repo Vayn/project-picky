@@ -51,6 +51,8 @@ except ImportError:
 
 CHARACTER_LIMIT = 140
 
+if os.environ['HTTP_HOST'].find('localhost') != -1:
+  TWITTER_API_ROOT = 'http://li2z.cn/t/'
 
 class TwitterError(Exception):
   '''Base class for Twitter errors'''
@@ -2189,20 +2191,21 @@ class Api(object):
     return p.sub(r'@<a href="/twitter/user/\1">\1</a>', text)
     
   def ExpandBitly(self, text):
-    p = re.compile('http:\/\/bit\.ly/[a-zA-Z0-9]+')
-    m = p.findall(text)
-    if len(m) > 0:
-      api = bitly.Api(login='livid', apikey='R_40ab00809faf431d53cfdacc8d8b8d7f')
-      last = None
-      for s in m:
-        if s != last:
-          cache_tag = 'bitly_' + hashlib.md5(s).hexdigest()
-          expanded = memcache.get(cache_tag)
-          if expanded is None:
-            expanded = api.expand(s)
-            memcache.set(cache_tag, expanded, 2678400)
-          last = s
-          text = text.replace(s, expanded)
+    if os.environ['HTTP_HOST'].find('localhost') == -1:
+      p = re.compile('http:\/\/bit\.ly/[a-zA-Z0-9]+')
+      m = p.findall(text)
+      if len(m) > 0:
+        api = bitly.Api(login='livid', apikey='R_40ab00809faf431d53cfdacc8d8b8d7f')
+        last = None
+        for s in m:
+          if s != last:
+            cache_tag = 'bitly_' + hashlib.md5(s).hexdigest()
+            expanded = memcache.get(cache_tag)
+            if expanded is None:
+              expanded = api.expand(s)
+              memcache.set(cache_tag, expanded, 2678400)
+            last = s
+            text = text.replace(s, expanded)
     return text
 
 class _FileCacheError(Exception):

@@ -6,6 +6,9 @@ import time
 import urllib
 import wsgiref.handlers
 import markdown
+import hashlib
+
+from auth import SECRET
 
 from v2ex.picky import Article
 from v2ex.picky import Datum
@@ -16,9 +19,12 @@ from v2ex import TWITTER_API_ROOT
 from v2ex.picky.misc import reminder
 from v2ex.picky.misc import message
 
+from v2ex.picky.security import CheckAuth, DoAuth
+
 from v2ex.picky.ext import feedparser
 from v2ex.picky.ext import twitter
 from v2ex.picky.ext.sessions import Session
+from v2ex.picky.ext.cookies import Cookies
 
 from google.appengine.api.labs import taskqueue
 from google.appengine.ext import webapp
@@ -31,24 +37,106 @@ from google.appengine.api import users
 from django.core.paginator import ObjectPaginator, InvalidPage
 from django.utils import simplejson
 
-site_domain = Datum.get('site_domain')
-site_domain_sync = Datum.get('site_domain_sync')
-site_name = Datum.get('site_name')
-site_author = Datum.get('site_author')
-site_slogan = Datum.get('site_slogan')
-site_analytics = Datum.get('site_analytics')
-
-user = users.get_current_user()
-
 # GLOBALS
 
 PAGE_SIZE = 10
 
-class WriterOverviewHandler(webapp.RequestHandler):
+class WriterAuthHandler(webapp.RequestHandler):
   def get(self):
+    self.session = Session()
+    site_domain = Datum.get('site_domain')
+    site_domain_sync = Datum.get('site_domain_sync')
+    site_name = Datum.get('site_name')
+    site_author = Datum.get('site_author')
+    site_slogan = Datum.get('site_slogan')
+    site_analytics = Datum.get('site_analytics')
     if site_domain is None:
+      site_domain = os.environ['HTTP_HOST']
       Datum.set('site_domain', os.environ['HTTP_HOST'])
     if site_domain_sync is None:
+      site_domain_sync = os.environ['HTTP_HOST']
+      Datum.set('site_domain_sync', os.environ['HTTP_HOST'])
+    template_values = {}
+    
+    if 'message' in self.session:
+      message = self.session['message']
+      del self.session['message']
+    else:
+      message = None
+    template_values['message'] = message
+    destination = None
+    destination = self.request.get('destination')
+    template_values['destination'] = destination
+    path = os.path.join(os.path.dirname(__file__), 'tpl', 'writer', 'auth.html')
+    self.response.out.write(template.render(path, template_values))
+    
+  def post(self):
+    self.session = Session()
+    site_domain = Datum.get('site_domain')
+    site_domain_sync = Datum.get('site_domain_sync')
+    site_name = Datum.get('site_name')
+    site_author = Datum.get('site_author')
+    site_slogan = Datum.get('site_slogan')
+    site_analytics = Datum.get('site_analytics')
+    destination = self.request.get('destination')
+    if (str(destination) == ''):
+      destination = None
+    if site_domain is None:
+      site_domain = os.environ['HTTP_HOST']
+      Datum.set('site_domain', os.environ['HTTP_HOST'])
+    if site_domain_sync is None:
+      site_domain_sync = os.environ['HTTP_HOST']
+      Datum.set('site_domain_sync', os.environ['HTTP_HOST'])
+    cookies = Cookies(self, max_age = 3600, path = '/')
+    s = self.request.get('secret')
+    sha1 = hashlib.sha1(s).hexdigest()
+    if (sha1 == SECRET):
+      cookies['auth'] = hashlib.sha1(SECRET + ':' + site_domain).hexdigest()
+      if destination is None:
+        self.redirect('/writer/overview')
+      else:
+        self.redirect(str(destination))
+    else:
+      self.session['message'] = "Your entered secret passphrase isn't correct"
+      if destination is None:
+        self.redirect('/writer/auth')
+      else:
+        self.redirect('/writer/auth?destination=' + str(destination))
+
+class WriterSignoutHandler(webapp.RequestHandler):
+  def get(self):
+    self.session = Session()
+    cookies = Cookies(self, max_age = 3600, path = '/')
+    if 'auth' in cookies:
+      del cookies['auth']
+    site_domain = Datum.get('site_domain')
+    site_domain_sync = Datum.get('site_domain_sync')
+    site_name = Datum.get('site_name')
+    site_author = Datum.get('site_author')
+    site_slogan = Datum.get('site_slogan')
+    site_analytics = Datum.get('site_analytics')
+    template_values = {}
+    template_values['site_name'] = site_name
+    template_values['site_domain'] = site_domain
+    path = os.path.join(os.path.dirname(__file__), 'tpl', 'writer', 'signout.html')
+    self.response.out.write(template.render(path, template_values))
+
+class WriterOverviewHandler(webapp.RequestHandler):
+  def get(self):
+    self.session = Session()
+    if CheckAuth(self) is False:
+      return DoAuth(self, '/writer/overview')
+    site_domain = Datum.get('site_domain')
+    site_domain_sync = Datum.get('site_domain_sync')
+    site_name = Datum.get('site_name')
+    site_author = Datum.get('site_author')
+    site_slogan = Datum.get('site_slogan')
+    site_analytics = Datum.get('site_analytics')
+    if site_domain is None:
+      site_domain = os.environ['HTTP_HOST']
+      Datum.set('site_domain', os.environ['HTTP_HOST'])
+    if site_domain_sync is None:
+      site_domain_sync = os.environ['HTTP_HOST']
       Datum.set('site_domain_sync', os.environ['HTTP_HOST'])
     articles = memcache.get('writer_articles')
     if articles is None:
@@ -68,7 +156,6 @@ class WriterOverviewHandler(webapp.RequestHandler):
       site_configured = False
     else:
       site_configured = True
-    self.session = Session()
     if is_paginated:
       self.session['page'] = page
     urls = memcache.get('writer_urls')
@@ -95,8 +182,6 @@ class WriterOverviewHandler(webapp.RequestHandler):
     }
     if site_analytics is not None:
       template_values['site_analytics'] = site_analytics
-    if user is not None:
-      template_values['user_email'] = user.email()
     if site_domain_sync is None:
       q = site_domain
     else:
@@ -127,6 +212,9 @@ class WriterOverviewHandler(webapp.RequestHandler):
 
 class WriterSettingsHandler(webapp.RequestHandler):
   def get(self):
+    self.session = Session()
+    if CheckAuth(self) is False:
+      return DoAuth(self, '/writer/settings')
     site_domain = Datum.get('site_domain')
     site_domain_sync = Datum.get('site_domain_sync')
     site_name = Datum.get('site_name')
@@ -166,12 +254,13 @@ class WriterSettingsHandler(webapp.RequestHandler):
     }
     if site_analytics is not None:
       template_values['site_analytics'] = site_analytics
-    if user is not None:
-      template_values['user_email'] = user.email()
     path = os.path.join(os.path.dirname(__file__), 'tpl', 'writer', 'settings.html')
     self.response.out.write(template.render(path, template_values))
     
   def post(self):
+    self.session = Session()
+    if CheckAuth(self) is False:
+      return DoAuth(self, '/writer/settings')
     Datum.set('site_domain', self.request.get('site_domain'))
     Datum.set('site_domain_sync', self.request.get('site_domain_sync'))
     Datum.set('site_name', self.request.get('site_name'))
@@ -184,7 +273,6 @@ class WriterSettingsHandler(webapp.RequestHandler):
       Datum.set('site_default_format', self.request.get('site_default_format'))
     Datum.set('twitter_account', self.request.get('twitter_account'))
     Datum.set('twitter_password', self.request.get('twitter_password'))
-    
     q = db.GqlQuery("SELECT * FROM Datum WHERE title = 'twitter_sync'")
     if q.count() == 1:
       twitter_sync = q[0]
@@ -197,27 +285,31 @@ class WriterSettingsHandler(webapp.RequestHandler):
     else:
       twitter_sync.substance = 'False'
     twitter_sync.put()
-    
     Datum.set('feed_url', self.request.get('feed_url'))
-    
     themes = os.listdir(os.path.join(os.path.dirname(__file__), 'tpl', 'themes'))
     if self.request.get('site_theme') in themes:
       Datum.set('site_theme', self.request.get('site_theme'))
     else:
       Datum.set('site_theme', 'default')
-    
     memcache.delete('mentions_twitter')
-    
     self.redirect('/writer/settings')
     
 class WriterWriteHandler(webapp.RequestHandler):
   def get(self, key = ''):
     self.session = Session()
+    if CheckAuth(self) is False:
+      return DoAuth(self, '/writer/new')
+    site_domain = Datum.get('site_domain')
+    site_domain_sync = Datum.get('site_domain_sync')
+    site_name = Datum.get('site_name')
+    site_author = Datum.get('site_author')
+    site_slogan = Datum.get('site_slogan')
+    site_analytics = Datum.get('site_analytics')
+    site_default_format = Datum.get('site_default_format')
     if 'page' in self.session:
       page = self.session['page']
     else:
       page = 0
-    site_default_format = Datum.get('site_default_format')
     if (key):
       article = db.get(db.Key(key))
       template_values = {
@@ -238,24 +330,33 @@ class WriterWriteHandler(webapp.RequestHandler):
       }
     if site_analytics is not None:
       template_values['site_analytics'] = site_analytics
-    if user is not None:
-      template_values['user_email'] = user.email()
     path = os.path.join(os.path.dirname(__file__), 'tpl', 'writer', 'write.html')
     self.response.out.write(template.render(path, template_values))
 
 class WriterRemoveHandler(webapp.RequestHandler):
   def get(self, key = ''):
     if (key):
+      self.session = Session()
+      if CheckAuth(self) is False:
+        return DoAuth(self, '/writer/remove/' + key)
       article = db.get(db.Key(key))
       article.delete()
     self.redirect('/writer/overview')
 
 class WriterSynchronizeHandler(webapp.RequestHandler):
   def get(self):
-    self.redirect('/')
+    self.redirect('/writer')
     
   def post(self, key = ''):
     self.session = Session()
+    if CheckAuth(self) is False:
+      return DoAuth(self, '/writer')
+    Datum.set('site_domain', self.request.get('site_domain'))
+    Datum.set('site_domain_sync', self.request.get('site_domain_sync'))
+    Datum.set('site_name', self.request.get('site_name'))
+    Datum.set('site_author', self.request.get('site_author'))
+    Datum.set('site_slogan', self.request.get('site_slogan'))
+    Datum.set('site_analytics', self.request.get('site_analytics'))
     if 'page' in self.session:
       page = self.session['page']
     else:
@@ -324,7 +425,6 @@ class WriterSynchronizeHandler(webapp.RequestHandler):
         result = urlfetch.fetch(google_ping)
       except:
         taskqueue.add(url='/writer/ping')
-      self.session = Session()
       self.redirect('/writer/overview?page=' + str(page))
     else:
       article = Article()
@@ -360,6 +460,9 @@ class WriterSynchronizeHandler(webapp.RequestHandler):
       
 class WriterQuickFindHandler(webapp.RequestHandler):
   def post(self):
+    self.session = Session()
+    if CheckAuth(self) is False:
+      return
     qf = self.request.get('qf')
     if qf is not None:
       q = db.GqlQuery('SELECT __key__ FROM Article WHERE title_url = :1', qf)
@@ -372,6 +475,8 @@ class WriterQuickFindHandler(webapp.RequestHandler):
 
 class WriterPingHandler(webapp.RequestHandler):
   def get(self):
+    Datum.set('site_domain', self.request.get('site_domain'))
+    Datum.set('site_name', self.request.get('site_name'))
     try:
       google_ping = 'http://blogsearch.google.com/ping?name=' + urllib.quote(Datum.get('site_name')) + '&url=http://' + urllib.quote(Datum.get('site_domain')) + '/&changesURL=http://' + urllib.quote(Datum.get('site_domain')) + '/index.xml'
       result = urlfetch.fetch(google_ping)
@@ -385,6 +490,8 @@ class WriterPingHandler(webapp.RequestHandler):
 def main():
   application = webapp.WSGIApplication([
   ('/writer', WriterOverviewHandler),
+  ('/writer/auth', WriterAuthHandler),
+  ('/writer/signout', WriterSignoutHandler),
   ('/writer/overview', WriterOverviewHandler),
   ('/writer/settings', WriterSettingsHandler),
   ('/writer/new', WriterWriteHandler),

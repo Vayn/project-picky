@@ -17,19 +17,15 @@ handlers:
 
 - url: /writer
   script: writer.py
-  login: admin
 
 - url: /writer/.*
   script: writer.py
-  login: admin
 
 - url: /twitter
   script: twitter.py
-  login: admin
 
 - url: /twitter/.*
   script: twitter.py
-  login: admin
 
 - url: .*
   script: main.py

@@ -9,6 +9,10 @@ import wsgiref.handlers
 from v2ex.picky.ext import twitter
 from v2ex.picky import Datum
 
+from v2ex.picky.security import CheckAuth, DoAuth
+
+from v2ex.picky.ext.sessions import Session
+
 from google.appengine.ext import webapp
 from google.appengine.ext.webapp import template
 from google.appengine.api import memcache
@@ -24,6 +28,9 @@ user = users.get_current_user()
 
 class TwitterHomeHandler(webapp.RequestHandler):
   def get(self):
+    self.session = Session()
+    if CheckAuth(self) is False:
+      return DoAuth(self, '/twitter')
     template_values = {}
     twitter_account = Datum.get('twitter_account')
     twitter_password = Datum.get('twitter_password')
@@ -55,6 +62,9 @@ class TwitterHomeHandler(webapp.RequestHandler):
   
 class TwitterListHandler(webapp.RequestHandler):
   def get(self, list_id):
+    self.session = Session()
+    if CheckAuth(self) is False:
+      return DoAuth(self, '/twitter/list/' + list_id)
     template_values = {}
     twitter_account = Datum.get('twitter_account')
     twitter_password = Datum.get('twitter_password')
@@ -91,6 +101,9 @@ class TwitterListHandler(webapp.RequestHandler):
 
 class TwitterMentionsHandler(webapp.RequestHandler):
   def get(self):
+    self.session = Session()
+    if CheckAuth(self) is False:
+      return DoAuth(self, '/twitter/mentions')
     template_values = {}
     twitter_account = Datum.get('twitter_account')
     twitter_password = Datum.get('twitter_password')
@@ -126,6 +139,9 @@ class TwitterMentionsHandler(webapp.RequestHandler):
 
 class TwitterInboxHandler(webapp.RequestHandler):
   def get(self):
+    self.session = Session()
+    if CheckAuth(self) is False:
+      return DoAuth(self, '/twitter/inbox')
     template_values = {}
     twitter_account = Datum.get('twitter_account')
     twitter_password = Datum.get('twitter_password')
@@ -161,6 +177,9 @@ class TwitterInboxHandler(webapp.RequestHandler):
 
 class TwitterUserHandler(webapp.RequestHandler):
   def get(self, user):
+    self.session = Session()
+    if CheckAuth(self) is False:
+      return DoAuth(self, '/twitter/user/' + user)
     template_values = {}
     twitter_account = Datum.get('twitter_account')
     twitter_password = Datum.get('twitter_password')
@@ -207,6 +226,9 @@ class TwitterUserHandler(webapp.RequestHandler):
 
 class TwitterFriendshipHandler(webapp.RequestHandler):
   def get(self, method, user):
+    self.session = Session()
+    if CheckAuth(self) is False:
+      return DoAuth(self, '/twitter/user/' + user)
     twitter_account = Datum.get('twitter_account')
     if twitter_account == user:
       self.redirect('/twitter/user/' + user)
@@ -221,6 +243,9 @@ class TwitterFriendshipHandler(webapp.RequestHandler):
   
 class TwitterPostHandler(webapp.RequestHandler):
   def post(self):
+    self.session = Session()
+    if CheckAuth(self) is False:
+      return DoAuth(self, '/twitter')
     tweet = self.request.get('status')
     if tweet != '':
       twitter_account = Datum.get('twitter_account')
