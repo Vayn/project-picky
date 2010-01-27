@@ -47,7 +47,7 @@ class MainHandler(webapp.RequestHandler):
         articles = db.GqlQuery("SELECT * FROM Article WHERE is_page = FALSE ORDER BY created DESC LIMIT 12")
         memcache.add("index", articles, 86400)
       pages = db.GqlQuery("SELECT * FROM Article WHERE is_page = TRUE AND is_for_sidebar = TRUE ORDER BY title ASC")
-      template_values['page_title'] = Datum.get('site_name')
+      template_values['page_title'] = site_name
       template_values['articles'] = articles
       template_values['articles_total'] = articles.count()
       template_values['pages'] = pages
