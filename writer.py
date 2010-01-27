@@ -351,12 +351,13 @@ class WriterSynchronizeHandler(webapp.RequestHandler):
     self.session = Session()
     if CheckAuth(self) is False:
       return DoAuth(self, '/writer')
-    Datum.set('site_domain', self.request.get('site_domain'))
-    Datum.set('site_domain_sync', self.request.get('site_domain_sync'))
-    Datum.set('site_name', self.request.get('site_name'))
-    Datum.set('site_author', self.request.get('site_author'))
-    Datum.set('site_slogan', self.request.get('site_slogan'))
-    Datum.set('site_analytics', self.request.get('site_analytics'))
+    site_domain = Datum.get('site_domain')
+    site_domain_sync = Datum.get('site_domain_sync')
+    site_name = Datum.get('site_name')
+    site_author = Datum.get('site_author')
+    site_slogan = Datum.get('site_slogan')
+    site_analytics = Datum.get('site_analytics')
+    site_default_format = Datum.get('site_default_format')
     if 'page' in self.session:
       page = self.session['page']
     else:
