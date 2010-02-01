@@ -471,6 +471,32 @@ a.page:hover {
 	border-color: #6c0;
 }
 
+.message {
+	background: -webkit-gradient(
+	    linear,
+	    left bottom,
+	    left top,
+	    color-stop(0.07, rgb(255,245,186)),
+	    color-stop(0.5, rgb(255,250,201)),
+	    color-stop(0.77, rgb(255,245,186))
+	);
+	background: -moz-linear-gradient(
+	    center bottom,
+	    rgb(255,245,186) 7%,
+	    rgb(255,250,201) 50%,
+	    rgb(255,245,186) 77%
+	);
+	font-size: 12px;
+	line-height: 12px;
+	color: #666;
+	padding: 8px 5px 8px 5px;
+	border-top: 1px solid #ffc;
+	border-bottom: 1px solid #ffc;
+	width: 690px;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
+}
+
 /* Super Awesome Buttons */
 
 .super.button {

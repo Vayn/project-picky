@@ -29,6 +29,10 @@
 	<small class="fade">Your site is not fully configured, please visit <img src="/static/shared/settings.png" align="absmiddle" />&nbsp;<a href="/writer/settings">Settings</a> now.</small>
 	<div class="sep10"></div>
 	{% endif %}
+	{% if message %}
+	<div class="message" id="SessionMessage" onclick="$('#SessionMessage').fadeOut();">{{ message }}</div>
+	<div class="sep10"></div>
+	{% endif %}
 	<div id="Operations"><div id="Quickfind"><form method="post" action="/writer/quick/find">Quick Find <input type="text" class="qf" name="qf" id="qf" /></form>
 	<script type="text/javascript">
 	var urls = new Array();

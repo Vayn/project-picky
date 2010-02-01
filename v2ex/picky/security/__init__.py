@@ -8,7 +8,7 @@ from v2ex.picky.ext.cookies import Cookies
 
 def CheckAuth(request):
   site_domain = Datum.get('site_domain')
-  cookies = Cookies(request, max_age = 2678400, path = '/')
+  cookies = Cookies(request, max_age = 86400, path = '/')
   if 'auth' in cookies:
     auth = cookies['auth']
     if str(auth) != hashlib.sha1(SECRET + ':' + site_domain).hexdigest():

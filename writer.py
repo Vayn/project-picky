@@ -89,7 +89,7 @@ class WriterAuthHandler(webapp.RequestHandler):
     if site_domain_sync is None:
       site_domain_sync = os.environ['HTTP_HOST']
       Datum.set('site_domain_sync', os.environ['HTTP_HOST'])
-    cookies = Cookies(self, max_age = 3600, path = '/')
+    cookies = Cookies(self, max_age = 86400, path = '/')
     s = self.request.get('secret')
     sha1 = hashlib.sha1(s).hexdigest()
     if (sha1 == SECRET):
@@ -211,6 +211,9 @@ class WriterOverviewHandler(webapp.RequestHandler):
       if len(mentions_twitter['results']) > 0:
         template_values['mentions_twitter'] = mentions_twitter['results']
     template_values['system_version'] = VERSION
+    if 'message' in self.session:
+      template_values['message'] = self.session['message']
+      del self.session['message']
     path = os.path.join(os.path.dirname(__file__), 'tpl', 'writer', 'overview.html')
     self.response.out.write(template.render(path, template_values))
 
@@ -391,6 +394,7 @@ class WriterSynchronizeHandler(webapp.RequestHandler):
         else:
           article.is_for_sidebar = False
         article.put()
+        self.session['message'] = 'Changes has been saved into <a href="/writer/edit/' + key + '">' + article.title + '</a>, <a href="http://' + site_domain + '/' + article.title_url + '" target="_blank">view it now</a>'
       else:
         article = Article()
         article.title = self.request.get('title')
@@ -412,6 +416,7 @@ class WriterSynchronizeHandler(webapp.RequestHandler):
         else:
           article.is_for_sidebar = False
         article.put()
+        self.session['message'] = 'New article <a href="/writer/edit/' + key + '">' + article.title + '</a> is created, <a href="http://' + site_domain + '/' + article.title_url + '" target="_blank">view it now</a>'
         # Ping Twitter
         twitter_sync = Datum.get('twitter_sync')
         if twitter_sync == 'True' and article.is_page is False:  
