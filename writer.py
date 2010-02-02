@@ -394,7 +394,7 @@ class WriterSynchronizeHandler(webapp.RequestHandler):
         else:
           article.is_for_sidebar = False
         article.put()
-        self.session['message'] = 'Changes has been saved into <a href="/writer/edit/' + key + '">' + article.title + '</a>, <a href="http://' + site_domain + '/' + article.title_url + '" target="_blank">view it now</a>'
+        self.session['message'] = '<div style="float: right;"><a href="http://' + site_domain + '/' + article.title_url + '" target="_blank" class="super normal button">View Now</a></div>Changes has been saved into <a href="/writer/edit/' + key + '">' + article.title + '</a>'
       else:
         article = Article()
         article.title = self.request.get('title')
@@ -416,7 +416,7 @@ class WriterSynchronizeHandler(webapp.RequestHandler):
         else:
           article.is_for_sidebar = False
         article.put()
-        self.session['message'] = 'New article <a href="/writer/edit/' + key + '">' + article.title + '</a> is created, <a href="http://' + site_domain + '/' + article.title_url + '" target="_blank">view it now</a>'
+        self.session['message'] = '<div style="float: right;"><a href="http://' + site_domain + '/' + article.title_url + '" target="_blank" class="super normal button">View Now</a></div>New article <a href="/writer/edit/' + key + '">' + article.title + '</a> has been created'
         # Ping Twitter
         twitter_sync = Datum.get('twitter_sync')
         if twitter_sync == 'True' and article.is_page is False:  
@@ -432,11 +432,12 @@ class WriterSynchronizeHandler(webapp.RequestHandler):
       memcache.delete_multi(obsolete)
       Datum.set('site_updated', time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()))
       # Ping Google Blog Search
-      try:
-        google_ping = 'http://blogsearch.google.com/ping?name=' + urllib.quote(Datum.get('site_name')) + '&url=http://' + urllib.quote(Datum.get('site_domain')) + '/&changesURL=http://' + urllib.quote(Datum.get('site_domain')) + '/sitemap.xml'
-        result = urlfetch.fetch(google_ping)
-      except:
-        taskqueue.add(url='/writer/ping')
+      if site_domain.find('localhost') == -1:
+        try:
+          google_ping = 'http://blogsearch.google.com/ping?name=' + urllib.quote(Datum.get('site_name')) + '&url=http://' + urllib.quote(Datum.get('site_domain')) + '/&changesURL=http://' + urllib.quote(Datum.get('site_domain')) + '/sitemap.xml'
+          result = urlfetch.fetch(google_ping)
+        except:
+          taskqueue.add(url='/writer/ping')
       self.redirect('/writer/overview?page=' + str(page))
     else:
       article = Article()
