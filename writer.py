@@ -416,7 +416,7 @@ class WriterSynchronizeHandler(webapp.RequestHandler):
         else:
           article.is_for_sidebar = False
         article.put()
-        self.session['message'] = '<div style="float: right;"><a href="http://' + site_domain + '/' + article.title_url + '" target="_blank" class="super normal button">View Now</a></div>New article <a href="/writer/edit/' + key + '">' + article.title + '</a> has been created'
+        self.session['message'] = '<div style="float: right;"><a href="http://' + site_domain + '/' + article.title_url + '" target="_blank" class="super normal button">View Now</a></div>New article <a href="/writer/edit/' + str(article.key()) + '">' + article.title + '</a> has been created'
         # Ping Twitter
         twitter_sync = Datum.get('twitter_sync')
         if twitter_sync == 'True' and article.is_page is False:  
