@@ -28,6 +28,8 @@ site_analytics = Datum.get('site_analytics')
 
 user = users.get_current_user()
 
+MODE_TWITTER = True
+
 class TwitterHomeHandler(webapp.RequestHandler):
   def get(self):
     self.session = Session()
@@ -60,6 +62,7 @@ class TwitterHomeHandler(webapp.RequestHandler):
     else:
       template_values['tweets'] = tweets
     template_values['system_version'] = VERSION
+    template_values['mode_twitter'] = True;
     template_values['page_title'] = 'Twitter'
     path = os.path.join(os.path.dirname(__file__), 'tpl', 'writer', 'twitter.html')
     self.response.out.write(template.render(path, template_values))
@@ -98,11 +101,13 @@ class TwitterListHandler(webapp.RequestHandler):
       else:
         template_values['tweets'] = tweets
       template_values['system_version'] = VERSION
+      template_values['mode_twitter'] = True;
       template_values['page_title'] = 'Twitter List'
       path = os.path.join(os.path.dirname(__file__), 'tpl', 'writer', 'twitter_list.html')
       self.response.out.write(template.render(path, template_values))
     except:
       template_values['system_version'] = VERSION
+      template_values['mode_twitter'] = True;
       template_values['page_title'] = 'Twitter Fail'
       path = os.path.join(os.path.dirname(__file__), 'tpl', 'writer', 'twitter_fail.html')
       self.response.out.write(template.render(path, template_values))
@@ -140,11 +145,13 @@ class TwitterMentionsHandler(webapp.RequestHandler):
       else:
         template_values['tweets'] = tweets
       template_values['system_version'] = VERSION
+      template_values['mode_twitter'] = True;
       template_values['page_title'] = 'Twitter Mentions'
       path = os.path.join(os.path.dirname(__file__), 'tpl', 'writer', 'twitter_mentions.html')
       self.response.out.write(template.render(path, template_values))
     except:
       template_values['system_version'] = VERSION
+      template_values['mode_twitter'] = True;
       template_values['page_title'] = 'Twitter Fail'
       path = os.path.join(os.path.dirname(__file__), 'tpl', 'writer', 'twitter_fail.html')
       self.response.out.write(template.render(path, template_values))
@@ -182,11 +189,13 @@ class TwitterInboxHandler(webapp.RequestHandler):
       else:
         template_values['tweets'] = tweets
       template_values['system_version'] = VERSION
+      template_values['mode_twitter'] = True;
       template_values['page_title'] = 'Twitter Inbox'
       path = os.path.join(os.path.dirname(__file__), 'tpl', 'writer', 'twitter_inbox.html')
       self.response.out.write(template.render(path, template_values))
     except:
       template_values['system_version'] = VERSION
+      template_values['mode_twitter'] = True;
       template_values['page_title'] = 'Twitter Fail'
       path = os.path.join(os.path.dirname(__file__), 'tpl', 'writer', 'twitter_fail.html')
       self.response.out.write(template.render(path, template_values))
@@ -235,11 +244,13 @@ class TwitterUserHandler(webapp.RequestHandler):
       template_values['friendships_ba'] = friendships_ba
       template_values['twitter_user'] = tweets[0].user
       template_values['system_version'] = VERSION
+      template_values['mode_twitter'] = True;
       template_values['page_title'] = 'Twitter User'
       path = os.path.join(os.path.dirname(__file__), 'tpl', 'writer', 'twitter_user.html')
       self.response.out.write(template.render(path, template_values))
     except:
       template_values['system_version'] = VERSION
+      template_values['mode_twitter'] = True;
       template_values['page_title'] = 'Twitter Fail'
       path = os.path.join(os.path.dirname(__file__), 'tpl', 'writer', 'twitter_fail.html')
       self.response.out.write(template.render(path, template_values))
