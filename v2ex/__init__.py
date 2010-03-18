@@ -1,3 +1,3 @@
 import os
 
-TWITTER_API_ROOT = 'http://twitter.com/'
+TWITTER_API_ROOT = 'http://somanytwitter.appspot.com/'

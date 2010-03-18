@@ -1,7 +1,7 @@
 {% include 'header.html' %}
 <body onload="setupZoom()">
 	<div id="Root">
-		<div id="Top"><a href="/" class="img"><img src="/static/themes/default/logo.png" alt="Project Picky" id="Logo" /></a></div>
+		<div id="Top"><a href="/" class="img"><img src="/static/themes/neue/logo.png" alt="Project Picky" id="Logo" /></a></div>
 		{% include 'sidebar.html' %}
 		<div id="Main">
 			<div class="inner">
@@ -24,7 +24,7 @@
 						{{ article.content }}
 					{% endifequal %}
 				{% endifequal %}
-				<div class="misc">{{ article.created|date:"M-j G:i" }}&nbsp;<a href="/{{ article.title_url }}" class="img">&nbsp;<img src="/static/shared/link.png" border="0" align="absmiddle" alt="Permalink to {{ article.title|escape }}" class="permaicon" />&nbsp;</a></div>
+				<div class="misc">{{ article.created|date:"M-j G:i" }}&nbsp;<a href="/{{ article.title_url }}" class="img"><img src="/static/themes/neue/link.png" border="0" align="absmiddle" alt="Permalink to {{ article.title|escape }}" class="permaicon" /></a></div>
 				</div>
 				{% endfor %}
 				{% if page_archive %}

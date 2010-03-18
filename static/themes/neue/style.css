@@ -1,12 +1,12 @@
 @charset "utf-8"
 
 /*
-	Project Picky CSS
+	Project Picky CSS (Neue)
 	
 	Author: Livid <v2ex.livid@me.com>
 	Web: http://picky.olivida.com/
 	
-	This is the vanilla configuration of style for Project Picky.
+	This is the neue configuration of style for Project Picky.
 	
 	The best way to wipe IE6 from this planet is to forget it all since the beginning of your every new project.
 */
@@ -19,7 +19,7 @@ body {
 	padding: 0px;
 	margin: 0px;
 	font-family: "Helvetica Neue", "Luxi Sans", "DejaVu Sans", Tahoma, "Hiragino Sans GB", STHeiti !important;
-	background-color: #e2e2e2;
+	background-color: #fff;
 	min-width: 900px;
 }
 
@@ -33,15 +33,13 @@ h2 {
 }
 
 a:link, a:visited, a:active {
-	color: #69891b;
+	color: #8490ff;
 	text-decoration: none;
-	border-bottom: 1px dotted #ccc;
 }
 
 a:hover {
-	color: #4a630f;
-	text-decoration: none;
-	border-bottom: 1px dotted #c0caaa;
+	color: #4861b5;
+	text-decoration: underline;
 }
 
 code {
