@@ -273,6 +273,7 @@ class AtomSitemapHandler(webapp.RequestHandler):
     
 class RobotsHandler(webapp.RequestHandler):
   def get(self):
+    template_values = {}
     path = os.path.join(os.path.dirname(__file__), 'tpl', 'shared', 'robots.txt')
     self.response.headers['Content-type'] = 'text/plain; charset=UTF-8'
     self.response.out.write(template.render(path, template_values))
