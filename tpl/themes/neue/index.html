@@ -28,7 +28,7 @@
 						{{ article.content }}
 					{% endifequal %}
 				{% endifequal %}
-				<div class="misc"><strong>{{ article.created|date:"G:i, M j"|upper }}</strong>&nbsp;<a href="/{{ article.title_url }}" class="img"><img src="/static/themes/neue/link.png" border="0" align="absmiddle" alt="Permalink to {{ article.title|escape }}" class="permaicon" /></a></div>
+				<div class="misc"><strong>{{ article.created|timezone:8|date:"G:i, M j"|upper }}</strong>&nbsp;<a href="/{{ article.title_url }}" class="img"><img src="/static/themes/neue/link.png" border="0" align="absmiddle" alt="Permalink to {{ article.title|escape }}" class="permaicon" /></a></div>
 				</div>
 				{% endfor %}
 				{% if page_archive %}

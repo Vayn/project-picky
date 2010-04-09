@@ -12,6 +12,8 @@ from google.appengine.ext.webapp import template
 from google.appengine.api import memcache
 from google.appengine.ext import db
 
+template.register_template_library('v2ex.picky.templatetags.filters')
+
 class MainHandler(webapp.RequestHandler):
   def get(self):
     site_domain = Datum.get('site_domain')
