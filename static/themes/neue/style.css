@@ -33,12 +33,12 @@ h2 {
 }
 
 a:link, a:visited, a:active {
-	color: #8490ff;
+	color: #797f90;
 	text-decoration: none;
 }
 
 a:hover {
-	color: #4861b5;
+	color: #797f90;
 	text-decoration: underline;
 }
 
@@ -121,10 +121,16 @@ code {
 }
 
 #Main .header {
-	font-size: 10px;
-	line-height: 10px;
+	font-size: 12px;
+	line-height: 12px;
 	color: #aaa;
-	margin-bottom: 5px;
+	margin-bottom: 20px;
+	background-color: #f5f5f5;
+	padding: 5px;
+	border-top: 2px solid #f0f0f0;
+	display: inline-block;
+	-moz-border-radius: 0px 0px 5px 0px;
+	font-weight: bold;
 }
 
 #Main .footer {
@@ -155,7 +161,6 @@ code {
 
 #Main .content .misc {
 	font-size: 10px;
-	line-height: 10px;
 	color: #aaa;
 	text-align: right;
 	margin-top: 10px;
@@ -183,7 +188,7 @@ code {
 	border-radius: 5px;
 }
 
-#Main .content img.plain {
+#Main .content img.plain, #Main .misc img.plain {
 	border: none;
 	padding: 0px;
 	background-color: transparent;
@@ -194,16 +199,20 @@ code {
 	border-radius: none;
 }
 
-#Main .content .permaicon {
+#Main .misc .permaicon {
 	border: none;
-	padding: 0px 5px 0px 5px;
+	padding: 0px 5px 5px 5px;
 	background-color: transparent;
+	-moz-box-shadow: none;
+	-webkit-box-shadow: none;
 }
 
-#Main .content .permaicon:hover {
+#Main .misc .permaicon:hover {
 	border: none;
-	padding: 0px 5px 0px 5px;
-	background-color: rgba(255,255,255,0.8);
+	padding: 0px 5px 5px 5px;
+	background-color: transparent;
+	-moz-box-shadow: none;
+	-webkit-box-shadow: none;
 }
 
 #Main .sep {
@@ -294,4 +303,9 @@ a.img {
 
 .sep40 {
 	height: 40px;
+}
+
+.footnote {
+	font-size: 10px;
+	color: #666;
 }

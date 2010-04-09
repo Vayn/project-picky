@@ -16,7 +16,7 @@
 							{{ article.content }}
 						{% endifequal %}
 					{% endifequal %}
-					<div class="misc">Published on {{ article.created|date:"M-j G:i" }}</div>
+					<div class="misc">Published at <strong>{{ article.created|date:"G:i, M j"|upper }}</strong> • {{ article.hits }} views</div>
 					<div id="Ads">
 						<script type="text/javascript"><!--
 						google_ad_client = "pub-9823529788289591";

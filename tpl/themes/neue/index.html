@@ -6,7 +6,11 @@
 		<div id="Main">
 			<div class="inner">
 				{% if page_archive %}
-				<div class="header">This is the complete archive of this blog, totally {{ articles_total }} articles.</div>
+				<div class="header">COMPLETE ARCHIVE</div>
+				{% else %}
+					{% if page_top %}
+					<div class="header">20 MOST VIEWED ARTICLES</div>
+					{% endif %}
 				{% endif %}
 				{% for article in articles %}
 				{% if article.title %}<div class="title">{% if article.title_link%}<a href="{{ article.title_link }}" target="_blank">{{ article.title }}</a>{% else %}{{ article.title }}{% endif %}</div>{% endif %}
@@ -24,7 +28,7 @@
 						{{ article.content }}
 					{% endifequal %}
 				{% endifequal %}
-				<div class="misc">{{ article.created|date:"M-j G:i" }}&nbsp;<a href="/{{ article.title_url }}" class="img"><img src="/static/themes/neue/link.png" border="0" align="absmiddle" alt="Permalink to {{ article.title|escape }}" class="permaicon" /></a></div>
+				<div class="misc"><strong>{{ article.created|date:"G:i, M j"|upper }}</strong>&nbsp;<a href="/{{ article.title_url }}" class="img"><img src="/static/themes/neue/link.png" border="0" align="absmiddle" alt="Permalink to {{ article.title|escape }}" class="permaicon" /></a></div>
 				</div>
 				{% endfor %}
 				{% if page_archive %}
