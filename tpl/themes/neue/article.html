@@ -17,6 +17,15 @@
 						{% endifequal %}
 					{% endifequal %}
 					<div class="misc">Published at <strong>{{ article.created|timezone:8|date:"G:i \C\S\T, M j"|upper }}</strong> • {{ article.hits }} views</div>
+					{% if related %}
+					<div class="related">RELATED ARTICLES</div>
+					{% for related_article in related %}
+					<div class="sep10"></div>
+					›&nbsp;<a href="/{{ related_article.title_url }}">{{ related_article.title }}</a>
+					{% endfor %}
+					<div class="sep10"></div>
+					{% else %}
+					{% endif %}
 					<div id="Ads">
 						<script type="text/javascript"><!--
 						google_ad_client = "pub-9823529788289591";

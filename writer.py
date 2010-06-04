@@ -40,7 +40,7 @@ from django.utils import simplejson
 
 # GLOBALS
 
-PAGE_SIZE = 10
+PAGE_SIZE = 15
 
 class WriterAuthHandler(webapp.RequestHandler):
   def get(self):
@@ -193,7 +193,7 @@ class WriterOverviewHandler(webapp.RequestHandler):
     if mentions_web is None:
       try:
         mentions_web = feedparser.parse('http://blogsearch.google.com/blogsearch_feeds?hl=en&q=' + urllib.quote('link:' + Datum.get('site_domain')) + '&ie=utf-8&num=10&output=atom')
-        memcache.add('mentions_web', mentions_web, 3600)
+        memcache.add('mentions_web', mentions_web, 600)
       except:
         mentions_web = None
     if mentions_web is not None:
@@ -204,7 +204,7 @@ class WriterOverviewHandler(webapp.RequestHandler):
         result = urlfetch.fetch(TWITTER_API_ROOT + 'search.json?q=' + urllib.quote(q))
         if result.status_code == 200:
           mentions_twitter = simplejson.loads(result.content)
-          memcache.add('mentions_twitter', mentions_twitter, 3600)
+          memcache.add('mentions_twitter', mentions_twitter, 600)
       except:
         mentions_twitter = None
     if mentions_twitter is not None:
@@ -380,6 +380,7 @@ class WriterSynchronizeHandler(webapp.RequestHandler):
         article.title_url = self.request.get('title_url')
         article.parent_url = self.request.get('parent_url')
         article.content = self.request.get('content')
+        article.article_set = self.request.get('article_set')
         article.format = self.request.get('format')
         if article.format not in CONTENT_FORMATS:
           article.format = site_default_format
@@ -402,6 +403,7 @@ class WriterSynchronizeHandler(webapp.RequestHandler):
         article.title_url = self.request.get('title_url')
         article.parent_url = self.request.get('parent_url')
         article.content = self.request.get('content')
+        article.article_set = self.request.get('article_set')
         article.format = self.request.get('format')
         if article.format not in CONTENT_FORMATS:
           article.format = site_default_format
@@ -445,6 +447,7 @@ class WriterSynchronizeHandler(webapp.RequestHandler):
       article.title_link = self.request.get('title_link')
       article.title_url = self.request.get('title_url')
       article.content = self.request.get('content')
+      article.article_set = self.request.get('article_set')
       article.format = self.request.get('format')
       if article.format not in CONTENT_FORMATS:
         article.format = site_default_format

@@ -15,6 +15,7 @@ class Article(db.Model):
   is_for_sidebar = db.BooleanProperty(required=True, default=False)
   content = db.TextProperty()
   content_formatted = db.TextProperty()
+  article_set = db.StringProperty(required=False, indexed=True)
   format = db.StringProperty(required=True, default='html', indexed=True)
   created = db.DateTimeProperty(auto_now_add=True)
   last_modified = db.DateTimeProperty(auto_now=True)

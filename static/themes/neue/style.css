@@ -166,6 +166,15 @@ code {
 	margin-top: 10px;
 }
 
+#Main .content .related {
+	font-size: 10px;
+	line-height: 10px;
+	font-weight: bold;
+	color: #999;
+	padding-left: 10px;
+	border-left: 2px solid #f0f0f0;
+}
+
 #Main .content blockquote {
 	border-left: 1px solid #ccc;
 	padding-left: 15px;
@@ -309,3 +318,15 @@ a.img {
 	font-size: 10px;
 	color: #666;
 }
+
+.roundAvatar { display:block;position: relative; overflow: hidden; }
+.roundAvatar_Corner { position: absolute; }
+.roundAvatar_Small,.roundAvatar_Small_even { height: 32px;width: 32px; margin: 3px 5px 0 0; }
+.roundAvatar_Small .roundAvatar_Corner { left:-123px; }
+.roundAvatar_Small_even .roundAvatar_Corner { left:-123px;top:-75px; }
+.roundAvatar_Medium_odd,.roundAvatar_Medium { height: 48px;width: 48px; margin-right: 10px; }
+.roundAvatar_Medium_odd .roundAvatar_Corner,.roundAvatar_Medium .roundAvatar_Corner { left:-75px; }
+.roundAvatar_Medium_even { height: 48px;width: 48px; margin: 0 10px 10px 0; }
+.roundAvatar_Medium_even .roundAvatar_Corner{ left:-75px; top:-75px; }
+.roundAvatar_Large { height: 75px;width: 75px; margin-right: 10px; }
+.roundAvatar_Large .roundAvatar_Corner{ left:0; top:0; }
