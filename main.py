@@ -457,6 +457,14 @@ class RobotsHandler(webapp.RequestHandler):
     self.response.headers['Content-type'] = 'text/plain; charset=UTF-8'
     self.response.out.write(template.render(path, template_values))
 
+class HitFeedHandler(webapp.RequestHandler):
+    def get(self, key = ''):
+        if (key):
+            article = db.get(db.Key(key))
+            if article:
+                article.hits_feed = article.hits_feed + 1
+                article.put()
+
 def main():
   application = webapp.WSGIApplication([
   ('/archive', ArchiveHandler),
@@ -467,6 +475,7 @@ def main():
   ('/sitemap.xml', AtomSitemapHandler),
   ('/robots.txt', RobotsHandler),
   ('/', MainHandler),
+  ('/hit/([0-9a-zA-Z\-\_]+)', HitFeedHandler),
   ('/([0-9a-zA-Z\-\.]+)', ArticleHandler)
   ],
                                        debug=True)

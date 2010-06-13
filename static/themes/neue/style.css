@@ -46,6 +46,10 @@ code {
 	font-family: Panic Sans, Luxi Mono, "Courier New", Monaco;
 }
 
+pre {
+	font-family: Panic Sans, Luxi Mono, "Courier New", Monaco;
+}
+
 /* IDs */
 
 #Root {

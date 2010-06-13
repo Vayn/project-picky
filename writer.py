@@ -514,9 +514,9 @@ def main():
   ('/writer/new', WriterWriteHandler),
   ('/writer/save', WriterSynchronizeHandler),
   ('/writer/ping', WriterPingHandler),
-  ('/writer/update/([0-9a-zA-Z\-]+)', WriterSynchronizeHandler),
-  ('/writer/edit/([0-9a-zA-Z\-]+)', WriterWriteHandler),
-  ('/writer/remove/([0-9a-zA-Z\-]+)', WriterRemoveHandler),
+  ('/writer/update/([0-9a-zA-Z\-\_]+)', WriterSynchronizeHandler),
+  ('/writer/edit/([0-9a-zA-Z\-\_]+)', WriterWriteHandler),
+  ('/writer/remove/([0-9a-zA-Z\-\_]+)', WriterRemoveHandler),
   ('/writer/quick/find', WriterQuickFindHandler)
   ],
                                        debug=True)

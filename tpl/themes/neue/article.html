@@ -16,7 +16,7 @@
 							{{ article.content }}
 						{% endifequal %}
 					{% endifequal %}
-					<div class="misc">Published at <strong>{{ article.created|timezone:8|date:"G:i \C\S\T, M j"|upper }}</strong> • {{ article.hits }} views</div>
+					<div class="misc">Published at <strong>{{ article.created|timezone:8|date:"G:i \C\S\T, M j"|upper }}</strong> • {{ article.hits }}+{{ article.hits_feed }} views</div>
 					{% if related %}
 					<div class="related">RELATED ARTICLES</div>
 					{% for related_article in related %}
