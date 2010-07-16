@@ -464,6 +464,7 @@ class HitFeedHandler(webapp.RequestHandler):
             if article:
                 article.hits_feed = article.hits_feed + 1
                 article.put()
+        self.redirect('http://v2ex-picky.appspot.com/static/shared/1x1.gif')
 
 def main():
   application = webapp.WSGIApplication([

@@ -1487,7 +1487,7 @@ class Api(object):
       A sequence of twitter.Status instances, one for each message
     '''
     if user:
-      url = TWITTER_API_ROOT + '1/' + user + '/lists/' + list_id + '/statuses.json'
+      url = TWITTER_API_ROOT + '/' + user + '/lists/' + list_id + '/statuses.json'
     elif not user and not self._username:
       raise TwitterError("User must be specified if API is not authenticated.")
     else:
@@ -1542,7 +1542,7 @@ class Api(object):
     return [Status.NewFromJsonDict(x) for x in data]
 
   def GetLists(self):
-    url = TWITTER_API_ROOT + '1/' + self._username + '/lists.json'
+    url = TWITTER_API_ROOT + '/' + self._username + '/lists.json'
     json = self._FetchUrl(url)
     data = simplejson.loads(json)
     lists = []

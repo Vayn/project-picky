@@ -5,7 +5,7 @@
 		{% include 'sidebar.html' %}
 		<div id="Main">
 			<div class="inner">
-				<div class="title"><span class="tweet_avatar roundAvatar roundAvatar_Medium" style="float: left;"><a href="https://twitter.com/{{ twitter_account }}" target="_blank"><img align="absmiddle" src="{{ twitter_avatar }}" border="0" /><img class="roundAvatar_Corner" src="/static/shared/round.png" border="0" /></a></span>@<a href="https://twitter.com/{{ twitter_account }}" target="_blank">{{ twitter_account }}</a><br /><small class="fade">{{ twitter_followers }} followers</small></div>
+				<div class="title"><span class="tweet_avatar roundAvatar roundAvatar_Medium" style="float: left;"><a href="http://twitter.com/{{ twitter_account }}" target="_blank"><img align="absmiddle" src="{{ twitter_avatar }}" border="0" /><img class="roundAvatar_Corner" src="/static/shared/round.png" border="0" /></a></span>@<a href="http://twitter.com/{{ twitter_account }}" target="_blank">{{ twitter_account }}</a><br /><small class="fade">{{ twitter_followers }} followers</small></div>
 				<div class="content">
 					{% for tweet in tweets%}
 					<blockquote>{{ tweet.text|urlize }}<div class="sep5"></div><div align="right"><small style="color: #aaa">{{ tweet.datetime|timesince }} ago</small></div></blockquote>
